@@ -17,55 +17,49 @@ Board::Board(QWidget *parent) : QWidget(parent)
         }
         intercross.push_back(row);
     }
-    // 00 01 02 03 04 05 06 07 08
-    // 10 11 12 13 14 15 16 17 18
-    // 20 21 22 23 24 25 26 27 28
-    // 30 31 32 33 34 35 36 37 38
-    // 40 41 42 43 44 45 46 47 48
-    // 50 51 52 53 54 55 56 57 58
-    // 60 61 62 63 64 65 66 67 68
-    // 70 71 72 73 74 75 76 77 78
-    // 80 81 82 83 84 85 86 87 88
-    // 90 91 92 93 94 95 96 97 98
+    initStones();
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 void Board::paintEvent(QPaintEvent * ev){
     QPainter painter(this);
-    QPainter * painterptr = & painter;
-    paintGrid(painterptr);
-    paintStones(painterptr);
+    // QPainter * painterptr = & painter;
+    paintGrid(painter);
+    paintStones(painter);
 }
-void Board::paintGrid(QPainter * painter){
+void Board::paintGrid(QPainter & painter){
     // draw 10 horizontal lines
     for (int i = 0; i< 10 ; i++){
         if (i == 0 || i == 9){
             //draw bold line
-            painter->setPen(QPen(Qt::black, 2));
-            painter->drawLine(intercross[i][0],intercross[i][8]);
+            painter.setPen(QPen(Qt::black, 2));
+            painter.drawLine(intercross[i][0],intercross[i][8]);
         }
         else {
-            painter->setPen(QPen(Qt::black, 1));
-            painter->drawLine(intercross[i][0],intercross[i][8]);
+            painter.setPen(QPen(Qt::black, 1));
+            painter.drawLine(intercross[i][0],intercross[i][8]);
         }
     }
     for (int i = 0; i< 9; i++) {
         if(i==0 || i==8){
             //draw bold line
-            painter->setPen(QPen(Qt::black, 2));
-            painter->drawLine(intercross[0][i],intercross[9][i]);
+            painter.setPen(QPen(Qt::black, 2));
+            painter.drawLine(intercross[0][i],intercross[9][i]);
         }
         else{
-            painter->setPen(QPen(Qt::black, 1));
-            painter->drawLine(intercross[0][i],intercross[4][i]);
-            painter->drawLine(intercross[5][i],intercross[9][i]);
+            painter.setPen(QPen(Qt::black, 1));
+            painter.drawLine(intercross[0][i],intercross[4][i]);
+            painter.drawLine(intercross[5][i],intercross[9][i]);
         }
     }
-    painter->setPen(QPen(Qt::black, 1.5));
-    painter->drawLine(intercross[0][3],intercross[2][5]);
-    painter->drawLine(intercross[0][5],intercross[2][3]);
-    painter->drawLine(intercross[9][3],intercross[7][5]);
-    painter->drawLine(intercross[9][5],intercross[7][3]);
+    painter.setPen(QPen(Qt::black, 1.5));
+    painter.drawLine(intercross[0][3],intercross[2][5]);
+    painter.drawLine(intercross[0][5],intercross[2][3]);
+    painter.drawLine(intercross[9][3],intercross[7][5]);
+    painter.drawLine(intercross[9][5],intercross[7][3]);
+    qDebug()<<"Finish Grid Painting";
 }
 void Board::initStones(){
+    qDebug()<<"Start stones initializing";
     int j = 0;
     int tempx = 0;
     int tempy = 0;
@@ -108,40 +102,40 @@ void Board::initStones(){
             j++;
         }
         _s.push_back(s);
-        stonemap[tempy*8+tempx] = _s[i];
+        stonemap[tempy*8+tempx] = i;
        // stonemap.insert(tempy*8+tempx,_s[i]);
     }
 
 
 
-    qDebug()<<"stonemap[0] in initStones is "<<stonemap[0].getcol()<<"  "<<stonemap[0].getrow();
+    //qDebug()<<"stonemap[0] in initStones is "<<stonemap[0].getcol()<<"  "<<stonemap[0].getrow();
 }
-void Board::paintStones(QPainter * painter){
-    initStones();
+void Board::paintStones(QPainter & painter){
+    qDebug()<<"Starts Stones Painting";
     for (int i = 0;i<32;i++) {
         if(i<=15){
-            painter->setPen(Qt::black);
+            painter.setPen(Qt::black);
         }else {
-            painter->setPen(Qt::red);
+            painter.setPen(Qt::red);
         }
         int col = gridwidth*_s[i].getcol();
         int row = gridwidth*_s[i].getrow();
         QPoint center(lefttopMargin+col,lefttopMargin+row);
         QPoint topleft(lefttopMargin-stoneradius+col,lefttopMargin-stoneradius+row);
         QPoint btmright(lefttopMargin+stoneradius+col,lefttopMargin+stoneradius+row);
-        painter->setBrush(QBrush(QColor(255,255,0)));
-        painter->drawEllipse(center,stoneradius,stoneradius);
+        painter.setBrush(QBrush(QColor(255,255,0)));
+        painter.drawEllipse(center,stoneradius,stoneradius);
         QRect rect(topleft,btmright);
         QFont font;
         font.setPointSize(20);
-        painter->setFont(font);
-        painter->drawText(rect,_s[i].Text(),QTextOption(Qt::AlignCenter));
+        painter.setFont(font);
+        painter.drawText(rect,_s[i].Text(),QTextOption(Qt::AlignCenter));
     }
 
-    qDebug()<<"stonemap[0] in paintStones is "<<stonemap[0].getcol()<<"  "<<stonemap[0].getrow();
+    //qDebug()<<"stonemap[0] in paintStones is "<<stonemap[0].getcol()<<"  "<<stonemap[0].getrow();
 }
 void Board::mousePressEvent(QMouseEvent * em){
-    qDebug()<<"stonemap[0] in mousePressEvent is "<<stonemap[0].getcol()<<"  "<<stonemap[0].getrow();
+    //qDebug()<<"stonemap[0] in mousePressEvent is "<<stonemap[0].getcol()<<"  "<<stonemap[0].getrow();
     QPoint pressedPoint = em->pos();
     //Stone s1= stonemap[0];
     int yInBoard = pressedPoint.y()-lefttopMargin;
@@ -161,14 +155,14 @@ void Board::mousePressEvent(QMouseEvent * em){
             int yLowerB = yInBoard>0?yInBoard/gridwidth:-1;
             int xLowerB = xInBoard>0?xInBoard/gridwidth:-1;
             if(findStone(xLowerB,yLowerB,pressedPoint)){
-                Stone selectedStone = stonemap.value(yLowerB*8+xLowerB);
+                Stone selectedStone = _s[stonemap[yLowerB*8+xLowerB]];
                 qDebug()<<"Stone info"<<selectedStone.getcol()<<" " <<selectedStone.getrow();
             }
         }else if (xLeftOver>=gridwidth-stoneradius) {
             int yLowerB = yInBoard>0?yInBoard/gridwidth:-1;
             int xUpperB = xInBoard>0?xInBoard/gridwidth + 1:0;
             if(findStone(xUpperB,yLowerB,pressedPoint)){
-                Stone selectedStone = stonemap.value(yLowerB*8+xUpperB);
+                Stone selectedStone = _s[stonemap[yLowerB*8+xUpperB]];
                 qDebug()<<"Stone info"<<selectedStone.getcol()<<" " <<selectedStone.getrow();
             }
         }
@@ -177,14 +171,14 @@ void Board::mousePressEvent(QMouseEvent * em){
             int yUpperB = yInBoard>0?yInBoard/gridwidth+1:0;
             int xLowerB = xInBoard>0?xInBoard/gridwidth:-1;
             if(findStone(xLowerB,yUpperB,pressedPoint)){
-                Stone selectedStone = stonemap.value(yUpperB*8+xLowerB);
+                Stone selectedStone = _s[stonemap[yUpperB*8+xLowerB]];
                 qDebug()<<"Stone info"<<selectedStone.getcol()<<" " <<selectedStone.getrow();
             }
         }else if (xLeftOver>=gridwidth-stoneradius) {
             int yUpperB = yInBoard>0?yInBoard/gridwidth + 1:0;
             int xUpperB = xInBoard>0?xInBoard/gridwidth + 1:0;
             if(findStone(xUpperB,yUpperB,pressedPoint)){
-               Stone selectedStone = stonemap.value(yUpperB*8+xUpperB);
+               Stone selectedStone = _s[stonemap[yUpperB*8+xUpperB]];
                qDebug()<<"Stone info"<<selectedStone.getcol()<<" " <<selectedStone.getrow();
             }
         }

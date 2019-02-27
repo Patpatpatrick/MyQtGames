@@ -12,8 +12,8 @@ class Board : public QWidget
 public:
     explicit Board(QWidget *parent = nullptr);
     void paintEvent(QPaintEvent * ev);
-    void paintGrid(QPainter * painterptr);
-    void paintStones(QPainter * painterptr);
+    void paintGrid(QPainter & painterptr);
+    void paintStones(QPainter & painterptr);
     void mousePressEvent(QMouseEvent * em);
     void mouseReleaseEvent(QMouseEvent *er);
     bool findStone(int x, int y, QPoint pressedPoint);
@@ -29,7 +29,7 @@ private:
     int gridwidth;
     int lefttopMargin;
     int stoneradius;
-    QHash<int,Stone> stonemap;
+    QHash<int,int> stonemap;
 };
 
 #endif // BOARD_H
