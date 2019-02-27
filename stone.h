@@ -10,6 +10,10 @@ public:
     int getrow();
     int getcol();
     QString Text();
+    void setDead();
+    bool isDead();
+    void setRow(int y);
+    void setCol(int x);
 private:
     int radius;
     int row;

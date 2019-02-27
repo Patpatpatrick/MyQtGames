@@ -18,6 +18,9 @@ public:
     void mouseReleaseEvent(QMouseEvent *er);
     bool findStone(int x, int y, QPoint pressedPoint);
     void initStones();
+    void mouseDoubleClickEvent(QMouseEvent *em);
+    int findClosestIndex(int pressedx, int pressedy);
+    bool isOutOfBoard(int pressedx, int pressedy);
 signals:
 
 public slots:
@@ -29,6 +32,7 @@ private:
     int gridwidth;
     int lefttopMargin;
     int stoneradius;
+    int _selectedId;
     QHash<int,int> stonemap;
 };
 

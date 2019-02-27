@@ -21,6 +21,18 @@ int Stone::getrow(){
 int Stone::getcol(){
     return col;
 }
+void Stone::setRow(int y){
+    row = y;
+}
+void Stone::setCol(int x){
+    col = x;
+}
+bool Stone::isDead(){
+    return dead;
+}
+void Stone::setDead(){
+    dead = true;
+}
 QString Stone::Text(){
     switch (this->_type) {
     case ROOK:
