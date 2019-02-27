@@ -16,6 +16,8 @@ public:
     void paintStones(QPainter * painterptr);
     void mousePressEvent(QMouseEvent * em);
     void mouseReleaseEvent(QMouseEvent *er);
+    bool findStone(int x, int y, QPoint pressedPoint);
+    void initStones();
 signals:
 
 public slots:
@@ -25,6 +27,8 @@ private:
     QVector<QVector<QPoint>> intercross;
     QVector<Stone> _s;
     int gridwidth;
+    int lefttopMargin;
+    int stoneradius;
     QHash<int,Stone> stonemap;
 };
 
