@@ -1,24 +1,27 @@
 #include "stone.h"
-
+#include <QHash>
 Stone::Stone()
 {
     radius = 20;
     red = false;
     dead = false;
 }
-void Stone::setinfo(int pradius,int prow,int pcol,int pid,bool pdead,bool pred, int p_type){
+void Stone::setInfo(int pradius,int prow,int pcol,int pid,bool pdead,bool pred, int p_type){
     radius = pradius;
     row = prow;
     col = pcol;
     id = pid;
     dead = pdead;
     red = pred;
-    _type = StoneType(p_type);
+    _type = StoneCommonInfo::StoneType(p_type);
 }
-int Stone::getrow(){
+StoneCommonInfo::StoneType Stone::getType(){
+    return _type;
+}
+int Stone::getRow(){
     return row;
 }
-int Stone::getcol(){
+int Stone::getCol(){
     return col;
 }
 void Stone::setRow(int y){
@@ -33,29 +36,33 @@ bool Stone::isDead(){
 void Stone::setDead(){
     dead = true;
 }
+bool Stone::isRed(){
+    return red;
+}
+
 QString Stone::Text(){
-    switch (this->_type) {
-    case ROOK:
+    switch (_type) {
+    case StoneCommonInfo::StoneType::ROOK:
         return "車";
-    case KNIGHT:
+    case StoneCommonInfo::StoneType::KNIGHT:
         return "馬";
-    case MINISTER:
+    case StoneCommonInfo::StoneType::MINISTER:
         if(red)
             return "相";
         return "象";
-    case GUARD:
+    case StoneCommonInfo::StoneType::GUARD:
         if(red)
             return "仕";
         return "士";
-    case KING:
+    case StoneCommonInfo::StoneType::KING:
         if(red)
             return "帅";
         return "将";
-    case CANNON:
+    case StoneCommonInfo::StoneType::CANNON:
         if(red)
             return "炮";
         return "砲";
-    case PAWN:
+    case StoneCommonInfo::StoneType::PAWN:
         if(red)
             return "兵";
         return "卒";

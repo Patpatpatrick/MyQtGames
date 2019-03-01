@@ -29,13 +29,15 @@ SOURCES += \
     welcomeui.cpp \
     ChessWelcome.cpp \
     Board.cpp \
-    stone.cpp
+    stone.cpp \
+    StoneController.cpp
 
 HEADERS += \
     welcomeui.h \
     ChessWelcome.h \
     Board.h \
-    stone.h
+    stone.h \
+    StoneController.h
 
 FORMS += \
     welcomeui.ui \

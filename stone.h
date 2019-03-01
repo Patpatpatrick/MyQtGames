@@ -2,25 +2,8 @@
 #define STONE_H
 #include <QString>
 
-class Stone
+namespace StoneCommonInfo
 {
-public:
-    Stone();
-    void setinfo(int radius,int row,int col,int id,bool dead,bool red, int _type);
-    int getrow();
-    int getcol();
-    QString Text();
-    void setDead();
-    bool isDead();
-    void setRow(int y);
-    void setCol(int x);
-private:
-    int radius;
-    int row;
-    int col;
-    int id;
-    bool dead;
-    bool red;
     enum StoneType{
         KING = 1,
         ROOK = 2,
@@ -30,7 +13,30 @@ private:
         GUARD = 6,
         PAWN = 7
     };
-    StoneType _type;
+}
+
+class Stone
+{
+public:
+    Stone();
+    void setInfo(int radius,int row,int col,int id,bool dead,bool red, int _type);
+    int getRow();
+    int getCol();
+    QString Text();
+    void setDead();
+    bool isDead();
+    void setRow(int y);
+    void setCol(int x);
+    bool isRed();
+    StoneCommonInfo::StoneType getType();
+private:
+    int radius;
+    int row;
+    int col;
+    int id;
+    bool dead;
+    bool red;
+    StoneCommonInfo::StoneType _type;
 };
 
 #endif // STONE_H
