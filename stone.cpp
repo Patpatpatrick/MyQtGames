@@ -39,7 +39,9 @@ void Stone::setDead(){
 bool Stone::isRed(){
     return red;
 }
-
+int Stone::getID(){
+    return id;
+}
 QString Stone::Text(){
     switch (_type) {
     case StoneCommonInfo::StoneType::ROOK:

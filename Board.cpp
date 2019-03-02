@@ -8,6 +8,7 @@ Board::Board(QWidget *parent,int selectedID) :
     QWidget(parent),
     stoneController(selectedID)
 {
+    this->resize(800, this->height());
     initInterCrosses();
     stoneController.initStones(stoneradius);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -56,79 +57,87 @@ void Board::paintGrid(QPainter & painter){
     painter.drawLine(intercross[0][5],intercross[2][3]);
     painter.drawLine(intercross[9][3],intercross[7][5]);
     painter.drawLine(intercross[9][5],intercross[7][3]);
-    //qDebug()<<"Finish Grid Painting";
+    qDebug()<<"Finish Grid Painting";
 }
 
 void Board::paintStones(QPainter & painter){
     qDebug()<<"Starts Stones Painting";
+    drawLiveStones(painter);
+    drawDeadStones(painter);
+}
+void Board::drawLiveStones(QPainter & painter){
     for (int i = 0;i<32;i++) {
-        if(stoneController.isDead(i)){
-            drawDeadStone(painter,i);
+        if(!stoneController.isDead(i)){
+            if(i<=15){
+                painter.setPen(Qt::black);
+            }else {
+                painter.setPen(Qt::red);
+            }
+            int col = gridwidth*stoneController.getCol(i);
+            int row = gridwidth*stoneController.getRow(i);
+            QPoint center(lefttopMargin+col,lefttopMargin+row);
+
+            if(stoneController.isThisSelected(i)){
+                painter.setBrush(QBrush(Qt::cyan));
+            }else
+                painter.setBrush(QBrush(QColor(255,255,0)));
+            painter.drawEllipse(center,stoneradius,stoneradius);
+            QPoint topleft(lefttopMargin-stoneradius+col,lefttopMargin-stoneradius+row);
+            QPoint btmright(lefttopMargin+stoneradius+col,lefttopMargin+stoneradius+row);
+            QRect rect(topleft,btmright);
+            if(stoneController.isThisSelected(i)){
+                QPen pen(Qt::DashDotLine);
+                painter.setPen(pen);
+                painter.setBrush(Qt::NoBrush);
+                painter.drawRect(rect);
+            }
+            QFont font;
+            font.setPointSize(20);
+            painter.setFont(font);
+            painter.drawText(rect,stoneController.Text(i),QTextOption(Qt::AlignCenter));
         }
-        else
-            drawLiveStone(painter,i);
     }
-
 }
-void Board::drawLiveStone(QPainter & painter,int i){
-    qDebug()<<"Live Painting"<<i;
 
-    if(i<=15){
-        painter.setPen(Qt::black);
-    }else {
-        painter.setPen(Qt::red);
-    }
-    int col = gridwidth*stoneController.getCol(i);
-    int row = gridwidth*stoneController.getRow(i);
-    QPoint center(lefttopMargin+col,lefttopMargin+row);
-    QPoint topleft(lefttopMargin-stoneradius+col,lefttopMargin-stoneradius+row);
-    QPoint btmright(lefttopMargin+stoneradius+col,lefttopMargin+stoneradius+row);
-    if(stoneController.isThisSelected(i)){
-        painter.setBrush(QBrush(Qt::cyan));
-    }else
+void Board::drawDeadStones(QPainter & painter){
+    int basicXShift = 10*gridwidth;
+    int basicYShift = 0;
+    int xcount = 0;
+    int ycount = 0;
+    int redDrawn = 0;
+    int blackDrawn = 0;
+    for (int i = 0 ; i < stoneController.deadStone.size() ; i++) {
+        if(!stoneController.deadIsRed(i)){
+            painter.setPen(Qt::black);
+            basicYShift = 0;
+            xcount = blackDrawn % 5;
+            ycount = blackDrawn / 5;
+            blackDrawn++;
+        }else {
+            painter.setPen(Qt::red);
+            basicYShift = 5*gridwidth;
+            xcount = redDrawn % 5;
+            ycount = redDrawn / 5;
+            redDrawn++;
+        }
+        QPoint center(lefttopMargin+basicXShift+xcount*gridwidth,
+                      lefttopMargin+basicYShift+ycount*gridwidth);
+        QPoint topleft(lefttopMargin-stoneradius+basicXShift+xcount*gridwidth,
+                       lefttopMargin-stoneradius+basicYShift+ycount*gridwidth);
+        QPoint btmright(lefttopMargin+stoneradius+basicXShift+xcount*gridwidth,
+                        lefttopMargin+stoneradius+basicYShift+ycount*gridwidth);
         painter.setBrush(QBrush(QColor(255,255,0)));
-    painter.drawEllipse(center,stoneradius,stoneradius);
-    QRect rect(topleft,btmright);
-    if(stoneController.isThisSelected(i)){
-        QPen pen(Qt::DashDotLine);
-        painter.setPen(pen);
-        painter.setBrush(Qt::NoBrush);
-        painter.drawRect(rect);
+        painter.drawEllipse(center,stoneradius,stoneradius);
+        QRect rect(topleft,btmright);
+        QFont font;
+        font.setPointSize(20);
+        painter.setFont(font);
+        painter.drawText(rect,
+                         stoneController.Text(stoneController.getIndexByPosInDeadVec(i)),
+                         QTextOption(Qt::AlignCenter));
     }
-    QFont font;
-    font.setPointSize(20);
-    painter.setFont(font);
-    painter.drawText(rect,stoneController.Text(i),QTextOption(Qt::AlignCenter));
 }
 
-void Board::drawDeadStone(QPainter & painter,int i){
-    qDebug()<<"Dead Painting"<<i;
-    static int xcount=10*gridwidth;
-    static int ycount=0;
-    static int deadCounts = deadCounts;
-    if(i<=15){
-        painter.setPen(Qt::black);
-    }else {
-        painter.setPen(Qt::red);
-    }
-    QPoint center(lefttopMargin+xcount,lefttopMargin+ycount);
-    QPoint topleft(lefttopMargin-stoneradius+xcount,lefttopMargin-stoneradius+ycount);
-    QPoint btmright(lefttopMargin+stoneradius+xcount,lefttopMargin+stoneradius+ycount);
-    painter.setBrush(QBrush(QColor(255,255,0)));
-    painter.drawEllipse(center,stoneradius,stoneradius);
-    QRect rect(topleft,btmright);
-    QFont font;
-    font.setPointSize(20);
-    painter.setFont(font);
-    painter.drawText(rect,stoneController.Text(i),QTextOption(Qt::AlignCenter));
-    if(stoneController.deadStonesCount>deadCounts){
-        deadCounts = stoneController.deadStonesCount;
-        xcount+=gridwidth;
-        if(xcount == 13*gridwidth){
-            ycount+=gridwidth;
-        }
-    }
-}
 int Board::findClosestIndex(int xInBoard, int yInBoard){
     int y = 0;
     int x = 0;
@@ -147,19 +156,19 @@ void Board::mouseDoubleClickEvent(QMouseEvent * em){
     int finedIndex = findClosestIndex(xInBoard,yInBoard);
     int closeX = finedIndex % 9;
     int closeY = finedIndex / 9;
-    if(findStone(closeX,closeY,pressedPoint)){
+    if(canFindStoneWIthClick(closeX,closeY,pressedPoint)){
         // select the stone on position closeY*9+closeX
-        stoneController.selectThisOne(stoneController.stonemap[closeY*9+closeX]);
+        stoneController.selectThisOne(stoneController.getIdByIndex(closeY*9+closeX));
         update();
     }
 }
-bool Board::findStone(int x, int y, QPoint pressedPoint){
+
+bool Board::canFindStoneWIthClick(int x, int y, QPoint pressedPoint){
+    if(!stoneController.hasStoneOn(y*9+x)) return false;
     int distsqr = (intercross[y][x].x()-pressedPoint.x())*(intercross[y][x].x()-pressedPoint.x())
             +(intercross[y][x].y()-pressedPoint.y())*(intercross[y][x].y()-pressedPoint.y());
     if(distsqr<=stoneradius*stoneradius){
-        if(stoneController.stonemap.contains(y*9+x)){
-            return true;
-        }
+        return true;
     }
     return false;
 }
@@ -174,6 +183,7 @@ bool Board::isOutOfBoard(int pressedx,int pressedy){
 }
 void Board::mousePressEvent(QMouseEvent * em){
     qDebug()<<"Mouse Pressed!";
+    qDebug()<<stoneController.isThisSelected(-1);
     if(!stoneController.isThisSelected(-1)){
         QPoint pressedPoint = em->pos();
         if(isOutOfBoard(pressedPoint.x(),pressedPoint.y())){
@@ -185,16 +195,20 @@ void Board::mousePressEvent(QMouseEvent * em){
         int finedIndex = findClosestIndex(xInBoard,yInBoard);
         int x = finedIndex % 9;
         int y = finedIndex / 9;
+        qDebug()<<"isCliking itSelf?"<<stoneController.isClickingItself(x,y);
         if(stoneController.isClickingItself(x,y)){
             stoneController.selectThisOne(-1);
             update();
             return;
         }
+        //qDebug()<<"canMoveToDest?"<<stoneController.canMoveToDest(x,y);
+        stoneController.canMoveToDest(x,y);
         if(stoneController.canMoveToDest(x,y)){
-            if(findStone(x,y,pressedPoint)){
+            qDebug()<<"canFindStoneWIthClick?"<<canFindStoneWIthClick(x,y,pressedPoint);
+            if(canFindStoneWIthClick(x,y,pressedPoint)){
                 // previous stone on this position is eaten
                 stoneController.processEatenStoneOn(x,y);
-                // update();
+                update();
             }
             stoneController.updateSelectedStone(x,y);
             stoneController.selectThisOne(-1);

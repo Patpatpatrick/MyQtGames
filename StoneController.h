@@ -23,25 +23,31 @@ public:
     void processEatenStoneOn(int x, int y);
     void updateSelectedStone(int x, int y);
     bool isThisSelected(int i);
+    bool deadIsRed(int i);
 
     void selectThisOne(int i);
     QString Text(int i);
-    int deadStonesCount;
-    QHash<int,int> stonemap;
-
+    QVector<int> deadStone;
+    QVector<Stone> _s;
+    int getIndexByPosInDeadVec(int i);
+    bool hasStoneOn(int index);
+    int getIdByIndex(int i);
 private:
     int _selectedId;
-    QVector<Stone> _s;
-    int relationBetweenStones(int destX, int destY);
+    QHash<int,int> stonemap;
+    int relationBetweenStones(int ExamID,int destX, int destY);
     bool KINGCanMoveTo(int destX, int destY);
     bool ROOKCanMoveTo(int destX, int destY);
     bool KNIGHTCanMoveTo(int destX, int destY);
     bool MINISTERCanMoveTo(int destX, int destY);
-
+    bool noOtherStoneInTheWay(int toExaminID, int destX, int destY);
+    bool destXYInOneLineWithExamine(int toExaminID, int destX, int destY);
+    // bool destXYInOneLineWithExamine(int destX, int destY);
     bool GUARDCanMoveTo(int destX, int destY);
     bool PAWNCanMoveTo(int destX, int destY);
     bool CANNONCanMoveTo(int destX, int destY);
-    bool InOneLine(int currID, int examinedID);
+    bool twoStonesOrPosFaceToFace(int destIndex, int examinedID);
+    bool canKINGEatKING(int destX,int destY);
 };
 
 #endif // STONECONTROLLER_H

@@ -29,6 +29,7 @@ public:
     void setCol(int x);
     bool isRed();
     StoneCommonInfo::StoneType getType();
+    int getID();
 private:
     int radius;
     int row;

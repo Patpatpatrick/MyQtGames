@@ -16,10 +16,10 @@ public:
     void paintStones(QPainter & painterptr);
     void mousePressEvent(QMouseEvent * em);
     void mouseReleaseEvent(QMouseEvent *er);
-    void drawLiveStone(QPainter & painter,int i);
-    void drawDeadStone(QPainter & painter,int i);
+    void drawLiveStones(QPainter & painter);
+    void drawDeadStones(QPainter & painter);
 
-    bool findStone(int x, int y, QPoint pressedPoint);
+    bool canFindStoneWIthClick(int x, int y, QPoint pressedPoint);
     void mouseDoubleClickEvent(QMouseEvent *em);
     int findClosestIndex(int pressedx, int pressedy);
     bool isOutOfBoard(int pressedx, int pressedy);
