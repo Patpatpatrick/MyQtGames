@@ -151,15 +151,8 @@ bool StoneController::KINGCanMoveTo(int destX,int destY){
     if(canKINGEatKING(destX,destY)){
         return true;
     }
-    if(_s[_selectedId].isRed()){
-        qDebug()<<"OutOf 9 palace?"<<!(3<=destX && 5>=destX && 7<=destY && 9>=destY);
-        if(!(3<=destX && 5>=destX && 7<=destY && 9>=destY))
-            return false;
-    }
-    if(!_s[_selectedId].isRed()){
-        if(!(3<=destX && 5>=destX && 0<=destY && 2>=destY))
-            return false;
-    }
+    if(!inNinePalace(destX,destY))
+        return false;
     int row = _s[_selectedId].getRow();
     int col = _s[_selectedId].getCol();
     if(twoStonesOrPosFaceToFace(destY*9+destX,31-_selectedId)){
@@ -171,9 +164,21 @@ bool StoneController::KINGCanMoveTo(int destX,int destY){
             || (destX == col && destY - row == 1)
             || (destX == col && destY - row == -1);
 }
+bool StoneController::inNinePalace(int destX,int destY){
+    if(_s[_selectedId].isRed()){
+        qDebug()<<"OutOf 9 palace?"<<!(3<=destX && 5>=destX && 7<=destY && 9>=destY);
+        if(!(3<=destX && 5>=destX && 7<=destY && 9>=destY))
+            return false;
+    }
+    if(!_s[_selectedId].isRed()){
+        if(!(3<=destX && 5>=destX && 0<=destY && 2>=destY))
+            return false;
+    }
+    return true;
+}
 bool StoneController::twoStonesOrPosFaceToFace(int destIndex,int examinedID){
-    qDebug()<<"No other stone in the way?"<<noOtherStoneInTheWay(examinedID,destIndex%9,destIndex/9);
-    if(noOtherStoneInTheWay(examinedID,destIndex%9,destIndex/9)){
+    qDebug()<<"No other stone in the way?"<<stoneCountInTheWay(examinedID,destIndex%9,destIndex/9);
+    if(stoneCountInTheWay(examinedID,destIndex%9,destIndex/9)==0){
         return (destIndex%9)==_s[examinedID].getCol();
     }
     return false;
@@ -181,7 +186,7 @@ bool StoneController::twoStonesOrPosFaceToFace(int destIndex,int examinedID){
 bool StoneController::ROOKCanMoveTo(int destX,int destY){
     //ROOK TESTED!
     if(destXYInOneLineWithExamine(_selectedId,destX,destY)){
-        if(noOtherStoneInTheWay(_selectedId,destX,destY)){
+        if(stoneCountInTheWay(_selectedId,destX,destY)==0){
             return true;
         }
     }
@@ -190,8 +195,9 @@ bool StoneController::ROOKCanMoveTo(int destX,int destY){
 bool StoneController::destXYInOneLineWithExamine(int toExaminID,int destX, int destY){
     return ( _s[toExaminID].getCol()==destX)^(_s[toExaminID].getRow()==destY);
 }
-bool StoneController::noOtherStoneInTheWay(int toExaminID,int destX,int destY){
+int StoneController::stoneCountInTheWay(int toExaminID,int destX,int destY){
     qDebug()<<"TOExamined Stone is in one line with "<<destX<<" "<<destY<<"?"<<destXYInOneLineWithExamine(toExaminID,destX,destY);
+    int rev = 0;
     if(!destXYInOneLineWithExamine(toExaminID,destX,destY))
         return false;
     if(relationBetweenStones(toExaminID,destX,destY)%10==0){
@@ -200,8 +206,7 @@ bool StoneController::noOtherStoneInTheWay(int toExaminID,int destX,int destY){
         int bottomY = destY>_s[toExaminID].getRow()?_s[toExaminID].getRow():destY;
         for(int i = bottomY+1; i<topY; i++){
             if(stonemap.contains(9*i+destX)){
-                qDebug()<<"THere is stone in the middle!";
-                return false;
+                rev++;
             }
         }
 
@@ -211,12 +216,11 @@ bool StoneController::noOtherStoneInTheWay(int toExaminID,int destX,int destY){
         int bottomX = destX>_s[_selectedId].getCol()?_s[_selectedId].getCol():destX;
         for(int i = bottomX+1; i < topX; i++){
             if(stonemap.contains(9*destY+i)){
-                qDebug()<<"THere is stone in the middle!";
-                return false;
+                rev++;
             }
         }
     }
-    return true;
+    return rev;
 }
 bool StoneController::KNIGHTCanMoveTo(int destX,int destY){
     int r = relationBetweenStones(_selectedId,destX, destY);
@@ -249,23 +253,67 @@ int StoneController::relationBetweenStones(int ExamID ,int destX,int destY){
 }
 
 bool StoneController::MINISTERCanMoveTo(int destX,int destY){
-//    qDebug()<<"MinisterCanMoveToDest? Yes! "<<true;
+    int r = relationBetweenStones(_selectedId, destX, destY);
+    if(r != 22)
+        return false;
+    int middleX = ( destX + _s[_selectedId].getCol())/2;
+    int middleY = (destY + _s[_selectedId].getRow())/2;
+    if(stonemap.contains(middleY*9+middleX))
+        return false;
+    return     (_s[_selectedId].isRed()  && !destOnAboveHalf(destY))
+            || (!_s[_selectedId].isRed() && destOnAboveHalf(destY));
 
-    return true;
+}
+bool StoneController::destOnAboveHalf(int destY){
+    return destY<=4;
 }
 bool StoneController::CANNONCanMoveTo(int destX,int destY){
-    qDebug()<<"CannonCanMoveToDest? Yes! "<<true;
-
-    return true;
+    return destIsValidBlankPlace(destX,destY) || CANNONTryingToEat(destX,destY);
+}
+bool StoneController::destIsValidBlankPlace(int destX, int destY){
+    if(destXYInOneLineWithExamine(_selectedId,destX,destY)){
+        if(stoneCountInTheWay(_selectedId,destX,destY)==0){
+            if(!stonemap.contains(9*destY+destX))
+                return true;
+        }
+    }
+    return false;
+}
+bool StoneController::CANNONTryingToEat(int destX,int destY){
+    if(destXYInOneLineWithExamine(_selectedId,destX,destY)){
+        if(stoneCountInTheWay(_selectedId,destX,destY)==1){
+            if(stonemap.contains(9*destY+destX))
+                return true;
+        }
+    }
 }
 bool StoneController::GUARDCanMoveTo(int destX,int destY){
-    qDebug()<<"GuardCanMoveToDest? Yes! "<<true;
-
+    int r = relationBetweenStones(_selectedId,destX, destY);
+    qDebug()<<"Guard should be 11"<<r;
+    if(r != 11)
+        return false;
+    if(!inNinePalace(destX,destY))
+        return false;
     return true;
 }
 bool StoneController::PAWNCanMoveTo(int destX,int destY){
-    qDebug()<<"PAWNCanMoveToDest? Yes! "<<true;
-    return true;
+    if(_s[_selectedId].isRed()){
+        if( _s[_selectedId].getRow()<=4){
+            return (relationBetweenStones(_selectedId,destX,destY) == 1)
+                    || (relationBetweenStones(_selectedId,destX,destY) == 10 && destY<_s[_selectedId].getRow());
+        }
+        else {
+            return (relationBetweenStones(_selectedId,destX,destY) == 10 && destY<_s[_selectedId].getRow());
+        }
+    }else {
+        if( _s[_selectedId].getRow()>=5){
+            return (relationBetweenStones(_selectedId,destX,destY) == 1)
+                    || (relationBetweenStones(_selectedId,destX,destY) == 10 &&  destY>_s[_selectedId].getRow());
+        }
+        else {
+            return (relationBetweenStones(_selectedId,destX,destY) == 10 && destY>_s[_selectedId].getRow());
+        }
+    }
 }
 bool StoneController::isClickingItself(int destx, int desty){
     return _s[_selectedId].getRow() == desty && _s[_selectedId].getCol() == destx;

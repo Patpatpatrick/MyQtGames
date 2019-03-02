@@ -34,6 +34,7 @@ signals:
 public slots:
 
 private:
+    bool redTurn;
     StoneController stoneController;
 };
 

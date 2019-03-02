@@ -32,6 +32,7 @@ public:
     int getIndexByPosInDeadVec(int i);
     bool hasStoneOn(int index);
     int getIdByIndex(int i);
+    bool inNinePalace(int destX, int destY);
 private:
     int _selectedId;
     QHash<int,int> stonemap;
@@ -40,7 +41,7 @@ private:
     bool ROOKCanMoveTo(int destX, int destY);
     bool KNIGHTCanMoveTo(int destX, int destY);
     bool MINISTERCanMoveTo(int destX, int destY);
-    bool noOtherStoneInTheWay(int toExaminID, int destX, int destY);
+    int stoneCountInTheWay(int toExaminID, int destX, int destY);
     bool destXYInOneLineWithExamine(int toExaminID, int destX, int destY);
     // bool destXYInOneLineWithExamine(int destX, int destY);
     bool GUARDCanMoveTo(int destX, int destY);
@@ -48,6 +49,9 @@ private:
     bool CANNONCanMoveTo(int destX, int destY);
     bool twoStonesOrPosFaceToFace(int destIndex, int examinedID);
     bool canKINGEatKING(int destX,int destY);
+    bool destOnAboveHalf(int destY);
+    bool destIsValidBlankPlace(int destX, int destY);
+    bool CANNONTryingToEat(int destX,int destY);
 };
 
 #endif // STONECONTROLLER_H

@@ -10,6 +10,7 @@ Board::Board(QWidget *parent,int selectedID) :
 {
     this->resize(800, this->height());
     initInterCrosses();
+    redTurn = true;
     stoneController.initStones(stoneradius);
     setAttribute(Qt::WA_DeleteOnClose);
 }
@@ -158,8 +159,10 @@ void Board::mouseDoubleClickEvent(QMouseEvent * em){
     int closeY = finedIndex / 9;
     if(canFindStoneWIthClick(closeX,closeY,pressedPoint)){
         // select the stone on position closeY*9+closeX
-        stoneController.selectThisOne(stoneController.getIdByIndex(closeY*9+closeX));
-        update();
+        if(redTurn == stoneController._s[stoneController.getIdByIndex(closeY*9+closeX)].isRed()){
+            stoneController.selectThisOne(stoneController.getIdByIndex(closeY*9+closeX));
+            update();
+        }
     }
 }
 
@@ -212,6 +215,7 @@ void Board::mousePressEvent(QMouseEvent * em){
             }
             stoneController.updateSelectedStone(x,y);
             stoneController.selectThisOne(-1);
+            redTurn = !redTurn;
             update();
             // we finish a full process of choosing and placing stone, now selectedId is -1 again.
         }
