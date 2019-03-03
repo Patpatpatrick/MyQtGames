@@ -11,15 +11,15 @@ class Board : public QWidget
 public:
     //explicit Board(QWidget *parent = nullptr);
     explicit Board(bool redDown = true,QWidget *parent = nullptr,int selectedID = -1);
-
     void paintEvent(QPaintEvent * ev);
     void paintGrid(QPainter & painterptr);
     void paintStones(QPainter & painterptr);
     void mousePressEvent(QMouseEvent * em);
-    void mouseReleaseEvent(QMouseEvent *er);
     void drawLiveStones(QPainter & painter);
     void drawDeadStones(QPainter & painter);
 
+    // 9*y+x is a intercross on the board, when the pressed point is with a circle of radius of 20 of the
+    // intercross, and there is a stone on index 9*y+x, then return true
     bool canFindStoneWIthClick(int x, int y, QPoint pressedPoint);
     void mouseDoubleClickEvent(QMouseEvent *em);
     int findClosestIndex(int pressedx, int pressedy);
@@ -36,9 +36,9 @@ public slots:
 
 protected:
     bool redTurn;
+    StoneController stoneController;
 private:
     QPushButton * regretBtn;
-    StoneController stoneController;
 };
 
 #endif // BOARD_H

@@ -194,9 +194,7 @@ bool Board::canFindStoneWIthClick(int x, int y, QPoint pressedPoint){
     }
     return false;
 }
-void Board::mouseReleaseEvent(QMouseEvent *er){
-    qDebug()<<"Mouse Released!";
-}
+
 bool Board::isOutOfBoard(int pressedx,int pressedy){
     int yInBoard = pressedy-lefttopMargin+stoneradius;
     int xInBoard = pressedx-lefttopMargin+stoneradius;
@@ -217,15 +215,15 @@ void Board::mousePressEvent(QMouseEvent * em){
         int finedIndex = findClosestIndex(xInBoard,yInBoard);
         int x = finedIndex % 9;
         int y = finedIndex / 9;
-        qDebug()<<"isCliking itSelf?"<<stoneController.isClickingItself(x,y);
-        if(stoneController.isClickingItself(x,y)){
+        //qDebug()<<"isCliking itSelf?"<<stoneController.isClickingItself(x,y);
+        if(stoneController.isClickingItself(stoneController._selectedId,x,y)){
             stoneController.selectThisOne(-1);
             update();
             return;
         }
         // qDebug()<<"canMoveToDest?"<<stoneController.canMoveToDest(x,y);
         // stoneController.canMoveToDest(x,y);
-        if(stoneController.canMoveToDest(x,y)){
+        if(stoneController.canMoveToDest(stoneController._selectedId,x,y)){
 //            qDebug()<<"canFindStoneWIthClick?"<<canFindStoneWIthClick(x,y,pressedPoint);
             int eatenStoneID = -1;
 //            int movedId = stoneController.getSelectedID();
@@ -237,7 +235,8 @@ void Board::mousePressEvent(QMouseEvent * em){
                 update();
                 qDebug()<<"EatenID is "<<eatenStoneID;
             }
-            stoneController.recordStep(eatenStoneID,9*y+x);
+            stoneController.recordStep(eatenStoneID,9*y+x,stoneController._selectedId,
+                                       stoneController.getIndexById(stoneController._selectedId));
             stoneController.updateSelectedStone(x,y);
             stoneController.selectThisOne(-1);
             redTurn = !redTurn;
