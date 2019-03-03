@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include "stone.h"
+#include "StepRecorder.h"
 #include <QHash>
 #include <QString>
 using namespace StoneCommonInfo;
@@ -33,9 +34,14 @@ public:
     bool hasStoneOn(int index);
     int getIdByIndex(int i);
     bool inNinePalace(int destX, int destY);
+    void recordStep(int killedID, int killedIDIndex);
+    void regretStep();
+    void updateSpecifiedStone(int StoneID, int destX, int destY);
+    void replaceReviveStone(int killedID, int destX, int destY);
 private:
     int _selectedId;
     QHash<int,int> stonemap;
+    StepRecorder stepRecorder;
     int relationBetweenStones(int ExamID,int destX, int destY);
     bool KINGCanMoveTo(int destX, int destY);
     bool ROOKCanMoveTo(int destX, int destY);

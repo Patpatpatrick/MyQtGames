@@ -36,6 +36,9 @@ bool Stone::isDead(){
 void Stone::setDead(){
     dead = true;
 }
+void Stone::setRevive(){
+    dead = false;
+}
 bool Stone::isRed(){
     return red;
 }

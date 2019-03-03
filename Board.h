@@ -2,6 +2,7 @@
 #define BOARD_H
 #include <QWidget>
 #include <QPoint>
+#include <QPushButton>
 #include "StoneController.h"
 
 class Board : public QWidget
@@ -35,6 +36,7 @@ public slots:
 
 private:
     bool redTurn;
+    QPushButton * regretBtn;
     StoneController stoneController;
 };
 

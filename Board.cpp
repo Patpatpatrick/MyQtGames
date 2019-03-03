@@ -12,6 +12,12 @@ Board::Board(QWidget *parent,int selectedID) :
     initInterCrosses();
     redTurn = true;
     stoneController.initStones(stoneradius);
+    regretBtn = new QPushButton("Regret Step",this);
+    connect(regretBtn,&QPushButton::clicked,[=](){
+        stoneController.regretStep();
+        redTurn = !redTurn;
+        update();
+    });
     setAttribute(Qt::WA_DeleteOnClose);
 }
 void Board::initInterCrosses()
@@ -204,15 +210,21 @@ void Board::mousePressEvent(QMouseEvent * em){
             update();
             return;
         }
-        //qDebug()<<"canMoveToDest?"<<stoneController.canMoveToDest(x,y);
-        stoneController.canMoveToDest(x,y);
+        // qDebug()<<"canMoveToDest?"<<stoneController.canMoveToDest(x,y);
+        // stoneController.canMoveToDest(x,y);
         if(stoneController.canMoveToDest(x,y)){
-            qDebug()<<"canFindStoneWIthClick?"<<canFindStoneWIthClick(x,y,pressedPoint);
+//            qDebug()<<"canFindStoneWIthClick?"<<canFindStoneWIthClick(x,y,pressedPoint);
+            int eatenStoneID = -1;
+//            int movedId = stoneController.getSelectedID();
+//            int previousIndex = stoneController.
             if(canFindStoneWIthClick(x,y,pressedPoint)){
                 // previous stone on this position is eaten
+                eatenStoneID = stoneController.getIdByIndex(9*y+x);
                 stoneController.processEatenStoneOn(x,y);
                 update();
+                qDebug()<<"EatenID is "<<eatenStoneID;
             }
+            stoneController.recordStep(eatenStoneID,9*y+x);
             stoneController.updateSelectedStone(x,y);
             stoneController.selectThisOne(-1);
             redTurn = !redTurn;

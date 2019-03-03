@@ -286,6 +286,7 @@ bool StoneController::CANNONTryingToEat(int destX,int destY){
                 return true;
         }
     }
+    return false;
 }
 bool StoneController::GUARDCanMoveTo(int destX,int destY){
     int r = relationBetweenStones(_selectedId,destX, destY);
@@ -324,4 +325,33 @@ bool StoneController::hasSameColorOnDest(int destx, int desty){
     }
     bool isRed = _s[stonemap[desty*9+destx]].isRed();
     return isRed == _s[_selectedId].isRed();
+}
+void StoneController::recordStep(int killedID, int destIndex){
+    qDebug()<<"killedId = "<<killedID;
+    stepRecorder.recordStep(killedID,destIndex,_selectedId,_s[_selectedId].getRow()*9+_s[_selectedId].getCol());
+}
+void StoneController::regretStep(){
+    if(stepRecorder.isEmpty()) return;
+    StepRecorder::Step a = stepRecorder.getLastStep();
+    qDebug()<<a.killedID;
+    //qDebug()<<_s[a.killedID].getID()<<"x="<<_s[a.killedID].getCol()<<"y="<<_s[a.killedID].getRow();
+    if(a.killedID != -1){
+        _s[a.killedID].setRevive();
+        deadStone.pop_back();
+        updateSpecifiedStone(a.movedID,a.previousIndex%9,a.previousIndex/9);
+        replaceReviveStone(a.killedID,a.destIndex%9,a.destIndex/9);
+    }else {
+        qDebug()<<"Regreting a step without eating anything, killedID is "<<a.killedID;
+        updateSpecifiedStone(a.movedID,a.previousIndex%9,a.previousIndex/9);
+    }
+}
+void StoneController::updateSpecifiedStone(int StoneID, int destX, int destY){
+    stonemap.remove(_s[StoneID].getRow()*9+_s[StoneID].getCol());
+    _s[StoneID].setRow(destY);
+    _s[StoneID].setCol(destX);
+    stonemap[destY*9+destX] = StoneID;
+}
+void StoneController::replaceReviveStone(int killedID, int destX,int destY){
+    qDebug()<<_s[killedID].getID()<<"x="<<_s[killedID].getCol()<<"y="<<_s[killedID].getRow();
+    stonemap[destY*9+destX] = killedID;
 }

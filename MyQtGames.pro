@@ -30,14 +30,16 @@ SOURCES += \
     ChessWelcome.cpp \
     Board.cpp \
     stone.cpp \
-    StoneController.cpp
+    StoneController.cpp \
+    StepRecorder.cpp
 
 HEADERS += \
     welcomeui.h \
     ChessWelcome.h \
     Board.h \
     stone.h \
-    StoneController.h
+    StoneController.h \
+    StepRecorder.h
 
 FORMS += \
     welcomeui.ui \

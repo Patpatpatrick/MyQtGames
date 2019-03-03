@@ -30,6 +30,7 @@ public:
     bool isRed();
     StoneCommonInfo::StoneType getType();
     int getID();
+    void setRevive();
 private:
     int radius;
     int row;
