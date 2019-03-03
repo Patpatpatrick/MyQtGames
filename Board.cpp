@@ -4,9 +4,9 @@
 #include <QMouseEvent>
 #include <QPoint>
 #include <QDebug>
-Board::Board(QWidget *parent,int selectedID) :
+Board::Board(bool redDown,QWidget *parent,int selectedID) :
     QWidget(parent),
-    stoneController(selectedID)
+    stoneController(selectedID,redDown)
 {
     this->resize(800, this->height());
     initInterCrosses();
@@ -75,7 +75,7 @@ void Board::paintStones(QPainter & painter){
 void Board::drawLiveStones(QPainter & painter){
     for (int i = 0;i<32;i++) {
         if(!stoneController.isDead(i)){
-            if(i<=15){
+            if(!stoneController._s[i].isRed()){
                 painter.setPen(Qt::black);
             }else {
                 painter.setPen(Qt::red);
@@ -114,14 +114,27 @@ void Board::drawDeadStones(QPainter & painter){
     int redDrawn = 0;
     int blackDrawn = 0;
     for (int i = 0 ; i < stoneController.deadStone.size() ; i++) {
-        if(!stoneController.deadIsRed(i)){
-            painter.setPen(Qt::black);
+        qDebug()<<"Black pawn should set black pen right?"<<!stoneController.deadShouldDrawAtBottom(i);
+        if(!stoneController.deadShouldDrawAtBottom(i)){
+            if(stoneController.redIsDown())
+                painter.setPen(Qt::black);
+
+            else {
+                painter.setPen(Qt::red);
+
+            }
             basicYShift = 0;
             xcount = blackDrawn % 5;
             ycount = blackDrawn / 5;
             blackDrawn++;
         }else {
-            painter.setPen(Qt::red);
+            if(stoneController.redIsDown())
+                painter.setPen(Qt::red);
+
+            else {
+                painter.setPen(Qt::black);
+
+            }
             basicYShift = 5*gridwidth;
             xcount = redDrawn % 5;
             ycount = redDrawn / 5;

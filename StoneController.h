@@ -11,7 +11,7 @@ class StoneController
 {
 public:
     StoneController();
-    StoneController(int _selectedID);
+    StoneController(int _selectedID,bool redDown);
 
     void initStones(int radius);
     bool isDead(int i);
@@ -24,7 +24,7 @@ public:
     void processEatenStoneOn(int x, int y);
     void updateSelectedStone(int x, int y);
     bool isThisSelected(int i);
-    bool deadIsRed(int i);
+    bool deadShouldDrawAtBottom(int i);
 
     void selectThisOne(int i);
     QString Text(int i);
@@ -38,8 +38,11 @@ public:
     void regretStep();
     void updateSpecifiedStone(int StoneID, int destX, int destY);
     void replaceReviveStone(int killedID, int destX, int destY);
+    bool isOnBottomHalfAtFirst(int i);
+    bool redIsDown();
 private:
     int _selectedId;
+    bool redDown;
     QHash<int,int> stonemap;
     StepRecorder stepRecorder;
     int relationBetweenStones(int ExamID,int destX, int destY);

@@ -10,7 +10,7 @@ class Board : public QWidget
     Q_OBJECT
 public:
     //explicit Board(QWidget *parent = nullptr);
-    explicit Board(QWidget *parent = nullptr,int selectedID = -1);
+    explicit Board(bool redDown = true,QWidget *parent = nullptr,int selectedID = -1);
 
     void paintEvent(QPaintEvent * ev);
     void paintGrid(QPainter & painterptr);
@@ -34,8 +34,9 @@ signals:
 
 public slots:
 
-private:
+protected:
     bool redTurn;
+private:
     QPushButton * regretBtn;
     StoneController stoneController;
 };

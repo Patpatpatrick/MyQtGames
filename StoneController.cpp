@@ -3,9 +3,14 @@
 StoneController::StoneController(){
     _selectedId = -1;
 }
-StoneController::StoneController(int ID):_selectedId(ID){
+StoneController::StoneController(int ID,bool redDown)
+    :_selectedId(ID),
+     redDown(redDown)
+{
 }
-
+bool StoneController::isOnBottomHalfAtFirst(int i){
+    return _s[i].isRed() == redDown;
+}
 void StoneController::initStones(int stoneradius){
     int j = 0;
     int tempx = 0;
@@ -14,36 +19,36 @@ void StoneController::initStones(int stoneradius){
     for(int stoneIndex = 0;stoneIndex<32;stoneIndex++){
         Stone s;
         if(_s.size() <= 8){
-            s.setInfo(stoneradius,0,j,stoneIndex,false,false,typeseries[stoneIndex]);
+            s.setInfo(stoneradius,0,j,stoneIndex,false,!redDown,typeseries[stoneIndex]);
             tempx = j;
             j++;
             if(j>8) j=1;
         } else if (_s.size() <= 10){
-            s.setInfo(stoneradius,2,j,stoneIndex,false,false,typeseries[stoneIndex]);
+            s.setInfo(stoneradius,2,j,stoneIndex,false,!redDown,typeseries[stoneIndex]);
             tempx = j;
             tempy = 2;
             j+=6;
             if(j>7) j = 0;
         } else if (_s.size() <= 15) {
-            s.setInfo(stoneradius,3,j,stoneIndex,false,false,typeseries[stoneIndex]);
+            s.setInfo(stoneradius,3,j,stoneIndex,false,!redDown,typeseries[stoneIndex]);
             tempx = j;
             tempy = 3;
             j+=2;
             if(j>8) j = 0;
         } else if (_s.size() <= 20) {
-            s.setInfo(stoneradius,6,j,stoneIndex,false,true,typeseries[stoneIndex]);
+            s.setInfo(stoneradius,6,j,stoneIndex,false,redDown,typeseries[stoneIndex]);
             tempx = j;
             tempy = 6;
             j+=2;
             if(j>8) j = 1;
         } else if (_s.size() <= 22) {
-            s.setInfo(stoneradius,7,j,stoneIndex,false,true,typeseries[stoneIndex]);
+            s.setInfo(stoneradius,7,j,stoneIndex,false,redDown,typeseries[stoneIndex]);
             tempx = j;
             tempy = 7;
             j+=6;
             if(j>7) j = 0;
         } else if (_s.size() <= 31) {
-            s.setInfo(stoneradius,9,j,stoneIndex,false,true,typeseries[stoneIndex]);
+            s.setInfo(stoneradius,9,j,stoneIndex,false,redDown,typeseries[stoneIndex]);
             tempx = j;
             tempy = 9;
             j++;
@@ -64,8 +69,12 @@ int StoneController::getCol(int i){
 QString StoneController::Text(int i){
     return _s[i].Text();
 }
-bool StoneController::deadIsRed(int i){
-    return _s[deadStone[i]].isRed();
+bool StoneController::deadShouldDrawAtBottom(int i){
+    qDebug()<<"Black pawn is red?"<<_s[deadStone[i]].isRed();
+    return _s[deadStone[i]].isRed() == redDown;
+}
+bool StoneController::redIsDown(){
+    return redDown;
 }
 int StoneController::getIndexByPosInDeadVec(int i){
     return _s[deadStone[i]].getID();
@@ -165,12 +174,12 @@ bool StoneController::KINGCanMoveTo(int destX,int destY){
             || (destX == col && destY - row == -1);
 }
 bool StoneController::inNinePalace(int destX,int destY){
-    if(_s[_selectedId].isRed()){
+    if(isOnBottomHalfAtFirst(_selectedId)){
         qDebug()<<"OutOf 9 palace?"<<!(3<=destX && 5>=destX && 7<=destY && 9>=destY);
         if(!(3<=destX && 5>=destX && 7<=destY && 9>=destY))
             return false;
     }
-    if(!_s[_selectedId].isRed()){
+    if(!isOnBottomHalfAtFirst(_selectedId)){
         if(!(3<=destX && 5>=destX && 0<=destY && 2>=destY))
             return false;
     }
@@ -260,8 +269,8 @@ bool StoneController::MINISTERCanMoveTo(int destX,int destY){
     int middleY = (destY + _s[_selectedId].getRow())/2;
     if(stonemap.contains(middleY*9+middleX))
         return false;
-    return     (_s[_selectedId].isRed()  && !destOnAboveHalf(destY))
-            || (!_s[_selectedId].isRed() && destOnAboveHalf(destY));
+    return     (isOnBottomHalfAtFirst(_selectedId)  && !destOnAboveHalf(destY))
+            || (!isOnBottomHalfAtFirst(_selectedId)  && destOnAboveHalf(destY));
 
 }
 bool StoneController::destOnAboveHalf(int destY){
@@ -298,7 +307,7 @@ bool StoneController::GUARDCanMoveTo(int destX,int destY){
     return true;
 }
 bool StoneController::PAWNCanMoveTo(int destX,int destY){
-    if(_s[_selectedId].isRed()){
+    if(isOnBottomHalfAtFirst(_selectedId)){
         if( _s[_selectedId].getRow()<=4){
             return (relationBetweenStones(_selectedId,destX,destY) == 1)
                     || (relationBetweenStones(_selectedId,destX,destY) == 10 && destY<_s[_selectedId].getRow());
