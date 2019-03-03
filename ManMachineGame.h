@@ -7,9 +7,12 @@ class ManMachineGame : public Board
 public:
     ManMachineGame();
     ManMachineGame(bool redDown);
-    void mouseDoubleClickEvent(QMouseEvent *em);
-    void mousePressEvent(QMouseEvent * em);
+    void mouseDoubleClickEvent(QMouseEvent *em) override;
+    void mousePressEvent(QMouseEvent * em) override;
     void computerMove();
+    void regretBtnFunction() override;
+    bool manDone();
+
 };
 
 #endif // MANMACHINEGAME_H

@@ -1,4 +1,5 @@
 #include "StoneController.h"
+#include <QElapsedTimer>
 #include <QDebug>
 StoneController::StoneController(){
     _selectedId = -1;
@@ -113,6 +114,36 @@ void StoneController::updateSelectedStone(int x, int y){
 
     stonemap[y*9+x] = _selectedId;
 }
+void StoneController::updateSelectedStone(int currStoneID,int x,int y){
+    qDebug()<<"updateSelectedStone function 1 . Size"<<stonemap.size();
+
+    // To update the postion of the moved stone, first take it out of the stonemap from where it used to be
+    stonemap.remove(_s[currStoneID].getRow()*9+_s[currStoneID].getCol());
+    // set new col and row with respect to this moved stone,
+
+    qDebug()<<"updateSelectedStone function 2 . Size"<<stonemap.size();
+
+
+    _s[currStoneID].setRow(y);
+    _s[currStoneID].setCol(x);
+    // update its record in the stone map
+
+    qDebug()<<"updateSelectedStone function 3 . Size"<<stonemap.size();
+
+    stonemap[y*9+x] = currStoneID;
+}
+void StoneController::conductMove(StepRecorder::Step bestMove){
+//    QElapsedTimer t;
+//    t.start();
+//    while(t.elapsed()<10000);
+    if(bestMove.killedID != -1){
+        // previous stone on this position is eaten
+        processEatenStoneOn(bestMove.destIndex%9,bestMove.destIndex/9);
+    }
+    recordStep(bestMove.killedID,bestMove.destIndex,bestMove.movedID,bestMove.previousIndex);
+    updateSelectedStone(bestMove.destIndex%9,bestMove.destIndex/9);
+    selectThisOne(-1);
+}
 bool StoneController::isThisSelected(int i){
     return _selectedId == i;
 }
@@ -192,7 +223,6 @@ bool StoneController::twoStonesOrPosFaceToFace(int destIndex,int examinedID){
     return false;
 }
 bool StoneController::ROOKCanMoveTo(int currRef,int destX,int destY){
-    //ROOK TESTED!
     if(destXYInOneLineWithExamine(currRef,destX,destY)){
         if(stoneCountInTheWay(currRef,destX,destY)==0){
             return true;
@@ -201,7 +231,7 @@ bool StoneController::ROOKCanMoveTo(int currRef,int destX,int destY){
     return false;
 }
 bool StoneController::destXYInOneLineWithExamine(int currRef,int destX, int destY){
-    return ( _s[currRef].getCol()==destX)^(_s[currRef].getRow()==destY);
+    return ( _s[currRef].getCol()==destX)!=(_s[currRef].getRow()==destY);
 }
 int StoneController::stoneCountInTheWay(int currRef,int destX,int destY){
 //    qDebug()<<"TOExamined Stone is in one line with "<<destX<<" "<<destY<<"?"<<destXYInOneLineWithExamine(toExaminID,destX,destY);
@@ -259,21 +289,81 @@ int StoneController::relationBetweenStones(int ExamID ,int destX,int destY){
     int ydigit = destY-row>=0?destY-row:row-destY;
     return ydigit*10+xdigit;
 }
-void StoneController::getAllPossibleMoves(StepRecorder & culculatedSteps){
+
+StepRecorder::Step StoneController::evaluateAllSteps(StepRecorder & calculatedSteps){
+    int maxScore = -100000;
+    StepRecorder::Step ret;
     for (int i = 0;i<=15;i++) {
         for(int row = 0;row<=9;row++){
             for(int col = 0;col <=8;col++){
                 if(canMoveToDest(i,col,row)){
-                    if(stonemap.contains(row*9+col)){
-                        culculatedSteps.recordStep(stonemap[row*9+col],row*9+col,i,getIndexById(i));
-                    }else {
-                        culculatedSteps.recordStep(-1,row*9+col,i,getIndexById(i));
-                    }
+                    evaluateSingleStep(calculatedSteps,ret,i,row,col,maxScore);
                 }
             }
         }
     }
-    qDebug()<<culculatedSteps.steps.size();
+    qDebug()<<calculatedSteps.steps.size();
+    ret = calculatedSteps.getFirstStepHelper();
+    return ret;
+}
+void StoneController::evaluateSingleStep(StepRecorder & calculatedSteps, StepRecorder::Step & ret,int i,int row,int col,int & maxScoreStandard){
+    if(stonemap.contains(row*9+col)){
+//        qDebug()<<"before psudomove, row col has stone or not? "<<stonemap.contains(row*9+col);
+//        qDebug()<<"before psudomove, the hypo moved stone index is "<<getIndexById(i);
+
+        int killedIndex = stonemap[row*9+col];
+        processEatenStoneOn(col,row);
+        recordStep(killedIndex,row*9+col,i,getIndexById(i));
+        calculatedSteps.recordStep(killedIndex,row*9+col,i,getIndexById(i));
+        updateSelectedStone(i,col,row);
+        int score = calculateScore(calculatedSteps,killedIndex,row*9+col,i,getIndexById(i));
+        if(score>maxScoreStandard){
+            maxScoreStandard = score;
+            genStep(ret,killedIndex,row*9+col,i,getIndexById(i),maxScoreStandard);
+        }
+        regretStep();
+//        qDebug()<<"after psudomove, the hypo moved stone index is "<<getIndexById(i);
+
+//        qDebug()<<"after psudomove, we regret, and rol col has the killed stone back again?"<<stonemap.contains(row*9+col);
+    }else {
+//        qDebug()<<"before psudomove"<<stonemap.contains(row*9+col);
+//        qDebug()<<"before psudomove, the hypo moved stone index is "<<getIndexById(i);
+
+        recordStep(-1,row*9+col,i,getIndexById(i));
+        calculatedSteps.recordStep(-1,row*9+col,i,getIndexById(i));
+        updateSelectedStone(i,col,row);
+        int score = calculateScore(calculatedSteps,-1,row*9+col,i,getIndexById(i));
+        if(score>maxScoreStandard){
+            maxScoreStandard = score;
+            genStep(ret,-1,row*9+col,i,getIndexById(i),maxScoreStandard);
+        }
+        regretStep();
+//        qDebug()<<"after psudomove, the hypo moved stone index is "<<getIndexById(i);
+
+//        qDebug()<<"after psudomove, we regret, and rol col has the killed stone back again?"<<stonemap.contains(row*9+col);
+    }
+    qDebug()<<stonemap.size();
+}
+int StoneController::calculateScore(StepRecorder & culculatedSteps,int killedID,int destIndex,int movedID,int previousIndex){
+//    QHash<int,int> tempMap = stonemap;
+//    tempMap.detach();
+//    QVector<Stone> tempstones = _s;
+//    tempstones.detach();
+//    processEatenStoneOn(1,1);
+    return evaluateScore();
+}
+
+void StoneController::genStep(StepRecorder::Step & ret,int killedID,int destIndex,int movedID,int previousIndex,int score){
+    ret.killedID = killedID;
+    ret.destIndex = destIndex;
+    ret.movedID = movedID;
+    ret.previousIndex = previousIndex;
+    ret.stepResultScore = score;
+}
+int StoneController::evaluateScore(){
+    qDebug()<<"This is a mock evaluateScore function now score is 100";
+    return 100;
+
 }
 int StoneController::getIndexById(int ID){
     return _s[ID].getRow()*9+_s[ID].getCol();
@@ -357,10 +447,12 @@ void StoneController::recordStep(int killedID, int destIndex,int movedId,int pre
 }
 void StoneController::regretStep(){
     if(stepRecorder.isEmpty()) return;
-    StepRecorder::Step a = stepRecorder.getLastStep();
+    StepRecorder::Step a = stepRecorder.getAndRemoveLastStep();
     //qDebug()<<"killed Id is"<<a.killedID;
     //qDebug()<<_s[a.killedID].getID()<<"x="<<_s[a.killedID].getCol()<<"y="<<_s[a.killedID].getRow();
     if(a.killedID != -1){
+        if(a.killedID == 24)
+            qDebug()<<"Got ya!!!!";
         _s[a.killedID].setRevive();
         deadStone.pop_back();
         updateSpecifiedStone(a.movedID,a.previousIndex%9,a.previousIndex/9);

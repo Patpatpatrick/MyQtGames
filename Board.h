@@ -30,6 +30,7 @@ public:
     const static int gridwidth = 40;
     const static int lefttopMargin = 60;
     const static int stoneradius = 20;
+    void conductMove(StepRecorder::Step bestMove);
 signals:
 
 public slots:
@@ -37,8 +38,9 @@ public slots:
 protected:
     bool redTurn;
     StoneController stoneController;
-private:
     QPushButton * regretBtn;
+    virtual void regretBtnFunction();
+private:
 };
 
 #endif // BOARD_H

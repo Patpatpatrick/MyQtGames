@@ -16,9 +16,13 @@ ChessWelcome::ChessWelcome(QWidget *parent) :
           reply = QMessageBox::question(this, "Choose Sequence", "Do you want to play as red(red always goes first)?",
                                         QMessageBox::Yes|QMessageBox::No,QMessageBox::Yes);
           if (reply == QMessageBox::Yes) {
+              //Board * board = new Board(true);
+
               ManMachineGame * board = new ManMachineGame(true);
               board->show();
           } else {
+              //Board * board = new Board(true);
+
               ManMachineGame * board = new ManMachineGame(false);
               board->show();
           }

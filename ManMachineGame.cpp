@@ -10,26 +10,47 @@ ManMachineGame::ManMachineGame()
 ManMachineGame::ManMachineGame(bool redDown)
     :Board (redDown)
 {
+    regretBtnFunction();
     if(!stoneController.redIsDown()){
         // QThread::msleep(3000);
         // computer move turn;
     }
 }
+bool ManMachineGame::manDone(){
+    return !(redTurn == stoneController.redIsDown());
+}
+
+void ManMachineGame::regretBtnFunction(){
+    connect(regretBtn,&QPushButton::clicked,[=](){
+//        qDebug()<<"=============subtype regret called==============";
+        stoneController.regretStep();
+        redTurn = !redTurn;
+//        stoneController.regretStep();
+        update();
+    });
+}
+
 void ManMachineGame::mouseDoubleClickEvent(QMouseEvent * em){
-    if(redTurn != stoneController.redIsDown()){
+    if(manDone()){
+//        qDebug()<<"redTurn ?"<<redTurn<<"red is down"<<stoneController.redIsDown();
         return;
     }
     Board::mouseDoubleClickEvent(em);
+//    qDebug()<<"After man-machine double click the selectedId is "<<stoneController._selectedId;
 }
 void ManMachineGame::mousePressEvent(QMouseEvent * em){
+//    qDebug()<<"Call subtype mousePressEvent!! Now select Id is "<<stoneController._selectedId;
     Board::mousePressEvent(em);
-    computerMove();
+    if( manDone()){
+        computerMove();
+    }
 }
 void ManMachineGame::computerMove(){
     //get all possible moves
     StepRecorder steps;
-    stoneController.getAllPossibleMoves(steps);
-    qDebug()<<"Computer has moved!!";
+    StepRecorder::Step bestMove = stoneController.evaluateAllSteps(steps);
+    conductMove(bestMove);
+    qDebug()<<"Computer Moves!";
 }
 
 

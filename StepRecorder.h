@@ -12,11 +12,13 @@ public:
         int destIndex;
         int movedID;
         int previousIndex;
+        int stepResultScore;
     };
     QVector<Step> steps;
     void recordStep(int killedID,int destIndex,int movedID,int previousIndex);
-    Step getLastStep();
+    Step getAndRemoveLastStep();
     bool isEmpty();
+    StepRecorder::Step getFirstStepHelper();
 };
 
 #endif // STEPRECORDER_H

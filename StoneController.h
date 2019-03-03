@@ -18,11 +18,14 @@ public:
     int getRow(int i);
     int getCol(int i);
     bool canMoveToDest(int ExaminedID, int destX, int destY);
-
     bool isClickingItself(int currRef,int destx, int desty);
     bool hasSameColorOnDest(int ExaminedID, int destx, int desty);
     void processEatenStoneOn(int x, int y);
+//    void processEatenStoneOn(int x, int y);
+
+    void processEatenStoneOn(QHash<int, int> &currMap, int x, int y);
     void updateSelectedStone(int x, int y);
+    void updateSelectedStone(int currStoneID,int x,int y);
     bool isThisSelected(int i);
 
     bool deadShouldDrawAtBottom(int i);
@@ -44,8 +47,10 @@ public:
     QVector<int> deadStone;
     QVector<Stone> _s;
     int _selectedId;
-    void getAllPossibleMoves(StepRecorder &steps);
     int getIndexById(int ID);
+    StepRecorder::Step evaluateAllSteps(StepRecorder & steps);
+    int calculateScore(StepRecorder &culculatedSteps, int killedID, int destIndex, int movedID, int previousIndex);
+    void conductMove(StepRecorder::Step bestMove);
 protected:
     bool redDown;
     QHash<int,int> stonemap;
@@ -72,6 +77,9 @@ protected:
     bool CANNONTryingToEat(int currRef,int destX,int destY);
 
 private:
+    void genStep(StepRecorder::Step &ret, int killedID, int destIndex, int movedID, int previousIndex, int score);
+    void evaluateSingleStep(StepRecorder &culculatedSteps, StepRecorder::Step &ret, int i, int row, int col, int &maxScoreStandard);
+    int evaluateScore();
 };
 
 #endif // STONECONTROLLER_H

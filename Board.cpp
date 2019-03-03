@@ -13,13 +13,18 @@ Board::Board(bool redDown,QWidget *parent,int selectedID) :
     redTurn = true;
     stoneController.initStones(stoneradius);
     regretBtn = new QPushButton("Regret Step",this);
+    regretBtnFunction();
+    setAttribute(Qt::WA_DeleteOnClose);
+}
+void Board::regretBtnFunction(){
     connect(regretBtn,&QPushButton::clicked,[=](){
+        qDebug()<<"=============supertype regret called==============";
         stoneController.regretStep();
         redTurn = !redTurn;
         update();
     });
-    setAttribute(Qt::WA_DeleteOnClose);
 }
+
 void Board::initInterCrosses()
 {
     for(int i = 0; i< 10; i++){
@@ -203,7 +208,7 @@ bool Board::isOutOfBoard(int pressedx,int pressedy){
 }
 void Board::mousePressEvent(QMouseEvent * em){
     qDebug()<<"Mouse Pressed!";
-    qDebug()<<stoneController.isThisSelected(-1);
+    qDebug()<<"Shoul return directly"<<stoneController.isThisSelected(-1);
     if(!stoneController.isThisSelected(-1)){
         QPoint pressedPoint = em->pos();
         if(isOutOfBoard(pressedPoint.x(),pressedPoint.y())){
@@ -232,7 +237,7 @@ void Board::mousePressEvent(QMouseEvent * em){
                 // previous stone on this position is eaten
                 eatenStoneID = stoneController.getIdByIndex(9*y+x);
                 stoneController.processEatenStoneOn(x,y);
-                update();
+                //update();
                 qDebug()<<"EatenID is "<<eatenStoneID;
             }
             stoneController.recordStep(eatenStoneID,9*y+x,stoneController._selectedId,
@@ -245,4 +250,10 @@ void Board::mousePressEvent(QMouseEvent * em){
         }
     }
 }
-
+void Board::conductMove(StepRecorder::Step bestMove){
+    stoneController._selectedId = bestMove.movedID;
+    update();
+    stoneController.conductMove(bestMove);
+    redTurn = !redTurn;
+    update();
+}
