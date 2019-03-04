@@ -296,6 +296,10 @@ StepRecorder::Step StoneController::evaluateAllSteps(StepRecorder & calculatedSt
     for (int i = 0;i<=15;i++) {
         for(int row = 0;row<=9;row++){
             for(int col = 0;col <=8;col++){
+                if(_s[i].isDead())
+                    continue;
+                if(isClickingItself(i,col,row))
+                    continue;
                 if(canMoveToDest(i,col,row)){
                     evaluateSingleStep(calculatedSteps,ret,i,row,col,maxScore);
                 }

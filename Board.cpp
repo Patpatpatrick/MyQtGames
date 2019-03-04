@@ -4,6 +4,9 @@
 #include <QMouseEvent>
 #include <QPoint>
 #include <QDebug>
+#include <QThread>
+#include <QTime>
+#include <QCoreApplication>
 Board::Board(bool redDown,QWidget *parent,int selectedID) :
     QWidget(parent),
     stoneController(selectedID,redDown)
@@ -253,6 +256,10 @@ void Board::mousePressEvent(QMouseEvent * em){
 void Board::conductMove(StepRecorder::Step bestMove){
     stoneController._selectedId = bestMove.movedID;
     update();
+    // b(bestMove);
+//    QTime _Timer = QTime::currentTime().addMSecs(3000);
+//    while( QTime::currentTime() < _Timer )
+//    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     stoneController.conductMove(bestMove);
     redTurn = !redTurn;
     update();
