@@ -306,7 +306,7 @@ StepRecorder::Step StoneController::evaluateAllSteps(StepRecorder & calculatedSt
             }
         }
     }
-    qDebug()<<calculatedSteps.steps.size();
+    // qDebug()<<calculatedSteps.steps.size();
     ret = calculatedSteps.getFirstStepHelper();
     return ret;
 }

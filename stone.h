@@ -13,6 +13,7 @@ namespace StoneCommonInfo
         GUARD = 6,
         PAWN = 7
     };
+    static int ChessPower[7] = {1500,100,50,20,50,20,15};
 }
 
 class Stone

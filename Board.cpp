@@ -7,6 +7,7 @@
 #include <QThread>
 #include <QTime>
 #include <QCoreApplication>
+#include <QLabel>
 Board::Board(bool redDown,QWidget *parent,int selectedID) :
     QWidget(parent),
     stoneController(selectedID,redDown)
@@ -16,6 +17,9 @@ Board::Board(bool redDown,QWidget *parent,int selectedID) :
     redTurn = true;
     stoneController.initStones(stoneradius);
     regretBtn = new QPushButton("Regret Step",this);
+    QLabel * deadLable = new QLabel(this);
+    deadLable->setText("Dead stones will be here!");
+    deadLable->setGeometry(lefttopMargin+10*gridwidth,0,300,50);
     regretBtnFunction();
     setAttribute(Qt::WA_DeleteOnClose);
 }
@@ -95,7 +99,7 @@ void Board::drawLiveStones(QPainter & painter){
             if(stoneController.isThisSelected(i)){
                 painter.setBrush(QBrush(Qt::cyan));
             }else
-                painter.setBrush(QBrush(QColor(255,255,0)));
+                painter.setBrush(QBrush(QColor(229, 195, 103, 190)));
             painter.drawEllipse(center,stoneradius,stoneradius);
             QPoint topleft(lefttopMargin-stoneradius+col,lefttopMargin-stoneradius+row);
             QPoint btmright(lefttopMargin+stoneradius+col,lefttopMargin+stoneradius+row);
