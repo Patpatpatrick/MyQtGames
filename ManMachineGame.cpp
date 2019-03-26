@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QTime>
+#include <QCoreApplication>
 ManMachineGame::ManMachineGame()
 {
 
@@ -47,6 +48,9 @@ void ManMachineGame::mousePressEvent(QMouseEvent * em){
 }
 void ManMachineGame::computerMove(){
     //get all possible moves
+    QTime _Timer = QTime::currentTime().addMSecs(2000);
+    while( QTime::currentTime() < _Timer )
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
     StepRecorder steps;
     StepRecorder::Step bestMove = stoneController.evaluateAllSteps(steps);
     conductMove(bestMove);
