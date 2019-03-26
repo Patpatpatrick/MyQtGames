@@ -1,6 +1,6 @@
 #include "ChessWelcome.h"
 #include "ui_ChessWelcome.h"
-#include "Board.h"
+#include "BasicGame.h"
 #include "ManMachineGame.h"
 #include <QWidget>
 #include <QPushButton>

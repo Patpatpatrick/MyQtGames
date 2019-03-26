@@ -1,5 +1,5 @@
 #include "welcomeui.h"
-#include "Board.h"
+#include "BasicGame.h"
 #include <QApplication>
 #include <QWidget>
 

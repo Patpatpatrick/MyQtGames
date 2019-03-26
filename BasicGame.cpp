@@ -7,7 +7,7 @@
 #include <QThread>
 #include <QTime>
 #include <QCoreApplication>
-Board::Board(bool redDown,QWidget *parent,int selectedID) :
+BasicGame::BasicGame(bool redDown,QWidget *parent,int selectedID) :
     QWidget(parent),
     stoneController(selectedID,redDown)
 {
@@ -19,7 +19,7 @@ Board::Board(bool redDown,QWidget *parent,int selectedID) :
     regretBtnFunction();
     setAttribute(Qt::WA_DeleteOnClose);
 }
-void Board::regretBtnFunction(){
+void BasicGame::regretBtnFunction(){
     connect(regretBtn,&QPushButton::clicked,[=](){
         qDebug()<<"=============supertype regret called==============";
         stoneController.regretStep();
@@ -28,7 +28,7 @@ void Board::regretBtnFunction(){
     });
 }
 
-void Board::initInterCrosses()
+void BasicGame::initInterCrosses()
 {
     for(int i = 0; i< 10; i++){
         QVector<QPoint> row;
@@ -39,12 +39,12 @@ void Board::initInterCrosses()
         intercross.push_back(row);
     }
 }
-void Board::paintEvent(QPaintEvent * ev){
+void BasicGame::paintEvent(QPaintEvent * ev){
     QPainter painter(this);
     paintGrid(painter);
     paintStones(painter);
 }
-void Board::paintGrid(QPainter & painter){
+void BasicGame::paintGrid(QPainter & painter){
     for (int i = 0; i< 10 ; i++){
         if (i == 0 || i == 9){
             //draw bold line
@@ -75,12 +75,12 @@ void Board::paintGrid(QPainter & painter){
     qDebug()<<"Finish Grid Painting";
 }
 
-void Board::paintStones(QPainter & painter){
+void BasicGame::paintStones(QPainter & painter){
     qDebug()<<"Starts Stones Painting";
     drawLiveStones(painter);
     drawDeadStones(painter);
 }
-void Board::drawLiveStones(QPainter & painter){
+void BasicGame::drawLiveStones(QPainter & painter){
     for (int i = 0;i<32;i++) {
         if(!stoneController.isDead(i)){
             if(!stoneController._s[i].isRed()){
@@ -114,7 +114,7 @@ void Board::drawLiveStones(QPainter & painter){
     }
 }
 
-void Board::drawDeadStones(QPainter & painter){
+void BasicGame::drawDeadStones(QPainter & painter){
     int basicXShift = 10*gridwidth;
     int basicYShift = 0;
     int xcount = 0;
@@ -166,14 +166,14 @@ void Board::drawDeadStones(QPainter & painter){
     }
 }
 
-int Board::findClosestIndex(int xInBoard, int yInBoard){
+int BasicGame::findClosestIndex(int xInBoard, int yInBoard){
     int y = 0;
     int x = 0;
     y = yInBoard/gridwidth;
     x = xInBoard/gridwidth;
     return y*9+x;
 }
-void Board::mouseDoubleClickEvent(QMouseEvent * em){
+void BasicGame::mouseDoubleClickEvent(QMouseEvent * em){
     //qDebug()<<"stonemap[0] in mousePressEvent is "<<stonemap[0].getcol()<<"  "<<stonemap[0].getrow();
     QPoint pressedPoint = em->pos();
     if(isOutOfBoard(pressedPoint.x(),pressedPoint.y())){
@@ -193,7 +193,7 @@ void Board::mouseDoubleClickEvent(QMouseEvent * em){
     }
 }
 
-bool Board::canFindStoneWIthClick(int x, int y, QPoint pressedPoint){
+bool BasicGame::canFindStoneWIthClick(int x, int y, QPoint pressedPoint){
     if(!stoneController.hasStoneOn(y*9+x)) return false;
     int distsqr = (intercross[y][x].x()-pressedPoint.x())*(intercross[y][x].x()-pressedPoint.x())
             +(intercross[y][x].y()-pressedPoint.y())*(intercross[y][x].y()-pressedPoint.y());
@@ -203,13 +203,13 @@ bool Board::canFindStoneWIthClick(int x, int y, QPoint pressedPoint){
     return false;
 }
 
-bool Board::isOutOfBoard(int pressedx,int pressedy){
+bool BasicGame::isOutOfBoard(int pressedx,int pressedy){
     int yInBoard = pressedy-lefttopMargin+stoneradius;
     int xInBoard = pressedx-lefttopMargin+stoneradius;
     return((yInBoard<0 || yInBoard>9*gridwidth+2*stoneradius)
     ||(xInBoard<0 || xInBoard>8*gridwidth+2*stoneradius));
 }
-void Board::mousePressEvent(QMouseEvent * em){
+void BasicGame::mousePressEvent(QMouseEvent * em){
     qDebug()<<"Mouse Pressed!";
     qDebug()<<"Shoul return directly"<<stoneController.isThisSelected(-1);
     if(!stoneController.isThisSelected(-1)){
@@ -253,7 +253,7 @@ void Board::mousePressEvent(QMouseEvent * em){
         }
     }
 }
-void Board::conductMove(StepRecorder::Step bestMove){
+void BasicGame::conductMove(StepRecorder::Step bestMove){
     stoneController._selectedId = bestMove.movedID;
     update();
     // b(bestMove);
