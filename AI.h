@@ -19,11 +19,17 @@ private:
 
     StepRecorder::Step evaluateAllStepsGetBest(StepRecorder & steps,StoneController controller);
 
-    int evaluateSingleStep(StepRecorder::Step & step,StoneController & controller);
+    int evaluateSingleStepByTryingToMoveAndRegret(StepRecorder::Step & step,StoneController & controller);
 
-    int calculateScore(StepRecorder::Step & step,StoneController& controller);
+    int getMinScoreResultByUserAfterAIFakeMove(StoneController& controller);
 
     StepRecorder::Step genStep(int killedID, int destIndex, int movedID, int previousIndex, int score);
+
+    void generateAllPossibleStepsOfUser(StepRecorder &steps, StoneController &controller);
+
+    int evaluateAllUserStepsGetWorstScenToAI(StepRecorder & steps,StoneController & controller);
+    int evaluateSingleStepOfUser(StepRecorder::Step &step, StoneController &controller);
+
 
 };
 
