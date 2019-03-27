@@ -1,6 +1,6 @@
 #include "ChessWelcome.h"
 #include "ui_ChessWelcome.h"
-#include "Board.h"
+#include "BasicGame.h"
 #include "ManMachineGame.h"
 #include <QWidget>
 #include <QPushButton>
@@ -23,12 +23,12 @@ ChessWelcome::ChessWelcome(QWidget *parent) :
           reply = QMessageBox::question(this, "Choose Sequence", "Do you want to play as red(red always goes first)?",
                                         QMessageBox::Yes|QMessageBox::No,QMessageBox::Yes);
           if (reply == QMessageBox::Yes) {
-              //Board * board = new Board(true);
+              //BasicGame * board = new BasicGame(true);
 
               ManMachineGame * board = new ManMachineGame(true);
               board->show();
           } else {
-              //Board * board = new Board(true);
+              //BasicGame * board = new BasicGame(true);
 
               ManMachineGame * board = new ManMachineGame(false);
               board->show();

@@ -5,12 +5,12 @@
 #include <QPushButton>
 #include "StoneController.h"
 
-class Board : public QWidget
+class BasicGame : public QWidget
 {
     Q_OBJECT
 public:
     //explicit Board(QWidget *parent = nullptr);
-    explicit Board(bool redDown = true,QWidget *parent = nullptr,int selectedID = -1);
+    explicit BasicGame(bool redDown = true,QWidget *parent = nullptr,int selectedID = -1);
     void paintEvent(QPaintEvent * ev);
     void paintGrid(QPainter & painterptr);
     void paintStones(QPainter & painterptr);

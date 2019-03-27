@@ -28,20 +28,22 @@ SOURCES += \
         main.cpp \
     welcomeui.cpp \
     ChessWelcome.cpp \
-    Board.cpp \
     stone.cpp \
     StoneController.cpp \
     StepRecorder.cpp \
-    ManMachineGame.cpp
+    ManMachineGame.cpp \
+    BasicGame.cpp \
+    AI.cpp
 
 HEADERS += \
     welcomeui.h \
     ChessWelcome.h \
-    Board.h \
     stone.h \
     StoneController.h \
     StepRecorder.h \
-    ManMachineGame.h
+    ManMachineGame.h \
+    BasicGame.h \
+    AI.h
 
 FORMS += \
     welcomeui.ui \
