@@ -4,13 +4,20 @@ StepRecorder::StepRecorder()
 {
 
 }
+StepRecorder::StepRecorder(const StepRecorder & stepRecorder){
+    steps = stepRecorder.steps;
+}
 
 void StepRecorder::recordStep(int killedID,int destIndex,int movedID,int previousIndex){
     Step newstep = {killedID,destIndex,movedID,previousIndex,-100000};
     steps.push_back(newstep);
-    qDebug()<<movedID<<" moves from "<<previousIndex%9<<" "<<previousIndex/9<<" to "<<destIndex%9<< " "<< destIndex/9<< " It kills "<<killedID;
+    // qDebug()<<movedID<<" moves from "<<previousIndex%9<<" "<<previousIndex/9<<" to "<<destIndex%9<< " "<< destIndex/9<< " It kills "<<killedID;
     // qDebug()<<"After recording step, Steps' size is"<<steps.size();
 }
+void StepRecorder::appendStep(Step & step){
+    steps.push_back(step);
+}
+
 StepRecorder::Step StepRecorder::getFirstStepHelper(){
     Step ret;
     if(!steps.isEmpty()){

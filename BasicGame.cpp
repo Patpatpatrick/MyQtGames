@@ -1,4 +1,4 @@
-#include "Board.h"
+#include "BasicGame.h"
 #include <QPainter>
 #include <QRect>
 #include <QMouseEvent>
@@ -95,7 +95,7 @@ void BasicGame::drawLiveStones(QPainter & painter){
             if(stoneController.isThisSelected(i)){
                 painter.setBrush(QBrush(Qt::cyan));
             }else
-                painter.setBrush(QBrush(QColor(255,255,0)));
+                painter.setBrush(QBrush(QColor(244, 188, 66, 150)));
             painter.drawEllipse(center,stoneradius,stoneradius);
             QPoint topleft(lefttopMargin-stoneradius+col,lefttopMargin-stoneradius+row);
             QPoint btmright(lefttopMargin+stoneradius+col,lefttopMargin+stoneradius+row);

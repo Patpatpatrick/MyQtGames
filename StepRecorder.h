@@ -7,6 +7,7 @@ class StepRecorder
 {
 public:
     StepRecorder();
+    StepRecorder(const StepRecorder & stepRecorder);
     struct Step{
         int killedID;
         int destIndex;
@@ -16,6 +17,7 @@ public:
     };
     QVector<Step> steps;
     void recordStep(int killedID,int destIndex,int movedID,int previousIndex);
+    void appendStep(Step & step);
     Step getAndRemoveLastStep();
     bool isEmpty();
     StepRecorder::Step getFirstStepHelper();

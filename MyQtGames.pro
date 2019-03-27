@@ -32,7 +32,8 @@ SOURCES += \
     StoneController.cpp \
     StepRecorder.cpp \
     ManMachineGame.cpp \
-    BasicGame.cpp
+    BasicGame.cpp \
+    AI.cpp
 
 HEADERS += \
     welcomeui.h \
@@ -41,7 +42,8 @@ HEADERS += \
     StoneController.h \
     StepRecorder.h \
     ManMachineGame.h \
-    BasicGame.h
+    BasicGame.h \
+    AI.h
 
 FORMS += \
     welcomeui.ui \

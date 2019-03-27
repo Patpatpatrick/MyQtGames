@@ -6,6 +6,16 @@ Stone::Stone()
     red = false;
     dead = false;
 }
+Stone::Stone(const Stone & otherstone){
+    radius = otherstone.radius;
+    row = otherstone.row;
+    col = otherstone.col;
+    id = otherstone.id;
+    dead = otherstone.dead;
+    red = otherstone.red;
+    _type = otherstone._type;
+}
+
 void Stone::setInfo(int pradius,int prow,int pcol,int pid,bool pdead,bool pred, int p_type){
     radius = pradius;
     row = prow;
@@ -15,13 +25,13 @@ void Stone::setInfo(int pradius,int prow,int pcol,int pid,bool pdead,bool pred, 
     red = pred;
     _type = StoneCommonInfo::StoneType(p_type);
 }
-StoneCommonInfo::StoneType Stone::getType(){
+StoneCommonInfo::StoneType Stone::getType() const{
     return _type;
 }
-int Stone::getRow(){
+int Stone::getRow() const{
     return row;
 }
-int Stone::getCol(){
+int Stone::getCol() const{
     return col;
 }
 void Stone::setRow(int y){
@@ -30,7 +40,7 @@ void Stone::setRow(int y){
 void Stone::setCol(int x){
     col = x;
 }
-bool Stone::isDead(){
+bool Stone::isDead() const{
     return dead;
 }
 void Stone::setDead(){
@@ -39,13 +49,13 @@ void Stone::setDead(){
 void Stone::setRevive(){
     dead = false;
 }
-bool Stone::isRed(){
+bool Stone::isRed() const {
     return red;
 }
-int Stone::getID(){
+int Stone::getID() const {
     return id;
 }
-QString Stone::Text(){
+QString Stone::Text() const{
     switch (_type) {
     case StoneCommonInfo::StoneType::ROOK:
         return "車";
