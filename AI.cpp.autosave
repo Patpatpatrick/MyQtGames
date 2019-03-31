@@ -1,0 +1,170 @@
+#include "AI.h"
+
+AI::AI()
+{
+    _level = 2;
+}
+StepRecorder::Step AI::getBestMove(const StoneController & controller){
+    StoneController copyController(controller);
+    StepRecorder::Step ret;
+    // after this function steps
+    ret = getBestMoveWithSafeCopy(copyController);
+//    qDebug()<<calculatedSteps.steps.size();
+//    ret = calculatedSteps.getFirstStepHelper();
+    return ret;
+}
+StepRecorder AI::AIgenerateAllPossibleSteps(StoneController & controller){
+    StepRecorder steps;
+    for (int i = 0;i<=15;i++) {
+        if(controller._s[i].isDead())
+            continue;
+        for(int row = 0;row<=9;row++){
+            for(int col = 0;col <=8;col++){
+                if(controller.isClickingItself(i,col,row))
+                    continue;
+                if(controller.canMoveToDest(i,col,row)){
+                    int killedId = -1;
+                    if(controller.hasStoneOn(row*9+col)){
+                        killedId = controller.getIdByIndex(row*9+col);
+                    }
+                    // StepRecorder::Step newstep = {killedId,row*9+col,i,controller.getIndexById(i),maxScore};
+                    steps.recordStep(killedId,row*9+col,i,controller.getIndexById(i));
+                }
+            }
+        }
+    }
+    return steps;
+}
+
+StepRecorder::Step AI::getBestMoveWithSafeCopy(StoneController & controller){
+    StepRecorder steps = AIgenerateAllPossibleSteps(controller);
+    // by get a highest score
+    int max = -100000;
+    int currentScore = -100000;
+    StepRecorder::Step ret = {-1,-1,-1,-1,-100000};
+    for (int i = 0; i < steps.steps.size(); i++) {
+        currentScore = updateControllerToGetNextLevelScore(steps.steps[i],controller,_level,true);
+        if(max < currentScore){
+            max = currentScore;
+            ret = steps.steps[i];
+        }
+    }
+    return ret;
+}
+
+int AI::updateControllerToGetNextLevelScore(StepRecorder::Step &step,StoneController& controller,int level,bool toMax){
+    // we still want to maximize the score here;
+    if(level == 0) return calculateScore(step,controller);
+    int score;
+    if(step.killedID != -1){
+        int killedIndex = step.destIndex;
+        controller.processEatenStoneOn(killedIndex%9,killedIndex/9);
+        controller.recordStep(step);
+        controller.updateSelectedStone(step.movedID,killedIndex%9,killedIndex/9);
+        // calculate score
+        if(toMax){
+            score = nextLevelMin(controller,level - 1);
+        }else{
+            score = nextLevelBest(controller,level - 1);
+        }
+        controller.regretStep();
+    }else {
+        controller.recordStep(step);
+        controller.updateSelectedStone(step.movedID,step.destIndex%9,step.destIndex/9);
+        // calculate score
+        if(toMax){
+            score = nextLevelMin(controller,level - 1);
+        }else{
+            score = nextLevelBest(controller,level - 1);
+        }
+        controller.regretStep();
+    }
+    return score;
+}
+
+StepRecorder AI::generateAllPossibleStepsOfUser(StoneController & controller){
+    StepRecorder steps;
+    for (int i = 16;i<=31;i++) {
+        if(controller._s[i].isDead())
+            continue;
+        for(int row = 0;row<=9;row++){
+            for(int col = 0;col <=8;col++){
+                if(controller.isClickingItself(i,col,row))
+                    continue;
+                if(controller.canMoveToDest(i,col,row)){
+                    int killedId = -1;
+                    if(controller.hasStoneOn(row*9+col)){
+                        killedId = controller.getIdByIndex(row*9+col);
+                    }
+                    // StepRecorder::Step newstep = {killedId,row*9+col,i,controller.getIndexById(i),maxScore};
+                    steps.recordStep(killedId,row*9+col,i,controller.getIndexById(i));
+                }
+            }
+        }
+    }
+    return steps;
+}
+
+int AI::nextLevelBest(StoneController & controller,int level){
+    StepRecorder steps = generateAllPossibleStepsOfUser(controller);
+    //under a computer move, evaluate all user steps, return a low
+    int lowest = 100000;
+    int score;
+    for (int i = 0;i<steps.steps.size();i++) {
+        score = updateControllerToGetNextLevelScore(steps.steps[i],controller,level,true);
+        if(score < lowest){
+            lowest = score;
+        }
+    }
+    return lowest;
+}
+
+int AI::nextLevelMin(StoneController & controller,int level){
+    StepRecorder steps = generateAllPossibleStepsOfUser(controller);
+    //under a computer move, evaluate all user steps, return a low
+    int max = -100000;
+    int score;
+    for (int i = 0;i<steps.steps.size();i++) {
+        score = updateControllerToGetNextLevelScore(steps.steps[i],controller,level,false);
+        if(score > max){
+            max = score;
+        }
+    }
+    return max;
+}
+
+int AI::calculateScore(StepRecorder::Step & step, StoneController & controller){
+    int score;
+    if(step.killedID != -1){
+        int killedIndex = step.destIndex;
+        controller.processEatenStoneOn(killedIndex%9,killedIndex/9);
+        controller.recordStep(step);
+        controller.updateSelectedStone(step.movedID,killedIndex%9,killedIndex/9);
+        int sum1 = 0;
+        int sum2 = 0;
+        for (int i = 0; i<=15;i++) {
+            sum1+= controller._s[i].isDead() ? 0 : StoneCommonInfo::chessPower[controller._s[i]._type-1];
+            sum2+= controller._s[i+16].isDead()? 0: StoneCommonInfo::chessPower[controller._s[i+16]._type-1];
+        }
+        step.stepResultScore = sum2-sum1;
+        score = sum1-sum2;
+        controller.regretStep();
+    }else {
+        controller.recordStep(step);
+        controller.updateSelectedStone(step.movedID,step.destIndex%9,step.destIndex/9);
+        // calculate score
+        int sum1 = 0;
+        int sum2 = 0;
+        for (int i = 0; i<=15;i++) {
+            sum1+= controller._s[i].isDead() ? 0 : StoneCommonInfo::chessPower[controller._s[i]._type-1];
+            sum2+= controller._s[i+16].isDead()? 0: StoneCommonInfo::chessPower[controller._s[i+16]._type-1];
+        }
+        step.stepResultScore = sum2-sum1;
+        score = sum1-sum2;
+        controller.regretStep();
+    }
+    return score;
+}
+
+
+

@@ -1,0 +1,41 @@
+#ifndef AI_H
+#define AI_H
+
+#include "StepRecorder.h"
+#include "StoneController.h"
+class AI
+{
+
+public:
+
+    AI();
+
+    StepRecorder::Step getBestMove(const StoneController & controller);
+
+private:
+    int _level;
+
+    StepRecorder bestMoves;
+
+    StepRecorder AIgenerateAllPossibleSteps(StoneController & controller);
+
+    int updateControllerToGetNextLevelScore(StepRecorder::Step & step,StoneController & controller,int level);
+
+    int getMinScoreResultByUserAfterAIFakeMove(StoneController& controller,int level);
+
+    StepRecorder::Step genStep(int killedID, int destIndex, int movedID, int previousIndex, int score);
+
+    StepRecorder generateAllPossibleStepsOfUser(StoneController & controller);
+
+    int nextLevelBest(StoneController & controller,int level);
+    int calculateScore(StepRecorder::Step &step, StoneController &controller);
+
+
+    int maxScore(StepRecorder::Step &step, StoneController &controller, int level);
+    StepRecorder::Step getBestMoveWithSafeCopy(StoneController &controller);
+    int nextLevelMin(StoneController &controller, int level);
+    int updateControllerToGetNextLevelScore(StepRecorder::Step &step, StoneController &controller, int level, bool toMax);
+};
+
+#endif // AI_H
+
