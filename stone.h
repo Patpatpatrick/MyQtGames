@@ -13,8 +13,8 @@ namespace StoneCommonInfo
         GUARD = 6,
         PAWN = 7
     };
-    const int chessPower[] = {1500,100,50,40,50,40,20};
-    // king 1500 ; rook 100; knight 50; minister 40;cannon 50;guard 40;pawn 20
+    const int chessPower[] = {1500,200,120,80,170,50,30};
+    // king 1500 ; rook 200; knight 120; minister 80;cannon 130;guard 50;pawn 30
 }
 
 class Stone

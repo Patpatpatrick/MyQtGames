@@ -13,24 +13,29 @@ public:
     StepRecorder::Step getBestMove(const StoneController & controller);
 
 private:
-    StepRecorder bestMoves;
+    int _level;
 
-    void generateAllPossibleSteps(StepRecorder &steps,StoneController & controller);
+    // StepRecorder bestMoves;
 
-    StepRecorder::Step evaluateAllStepsGetBest(StepRecorder & steps,StoneController controller);
+    StepRecorder AIgenerateAllPossibleSteps(StoneController & controller);
 
-    int evaluateSingleStepByTryingToMoveAndRegret(StepRecorder::Step & step,StoneController & controller);
+    int trueIsMin(StepRecorder::Step & step,StoneController & controller,int level);
 
-    int getMinScoreResultByUserAfterAIFakeMove(StoneController& controller);
+    int getMinScoreResultByUserAfterAIFakeMove(StoneController& controller,int level);
 
     StepRecorder::Step genStep(int killedID, int destIndex, int movedID, int previousIndex, int score);
 
-    void generateAllPossibleStepsOfUser(StepRecorder &steps, StoneController &controller);
+    StepRecorder generateAllPossibleStepsOfUser(StoneController & controller);
 
-    int evaluateAllUserStepsGetWorstScenToAI(StepRecorder & steps,StoneController & controller);
-    int evaluateSingleStepOfUser(StepRecorder::Step &step, StoneController &controller);
+    int nextLevelBest(StoneController & controller,int level);
+    int calculateScore(StoneController &controller);
 
 
+    int maxScore(StepRecorder::Step &step, StoneController &controller, int level);
+    StepRecorder::Step getBestMoveWithSafeCopy(StoneController &controller);
+    int nextLevelMin(StoneController &controller, int level);
+    int trueIsMin(StepRecorder::Step &step, StoneController &controller, int level, bool toMax);
 };
 
 #endif // AI_H
+

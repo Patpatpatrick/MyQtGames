@@ -1,6 +1,8 @@
 #include "StoneController.h"
 #include <QElapsedTimer>
 #include <QDebug>
+#define QT_NO_DEBUG_OUTPUT
+
 StoneController::StoneController(){
     _selectedId = -1;
 }
@@ -99,7 +101,7 @@ bool StoneController::hasStoneOn(int index) const {
     return stonemap.contains(index);
 }
 void StoneController::processEatenStoneOn(int posX, int posY) {
-    qDebug()<<"processEatenStoneOn function. Size"<<stonemap.size();
+    // qDebug()<<"processEatenStoneOn function. Size"<<stonemap.size();
     if(stonemap.contains(posY*9+posX)){
         _s[stonemap[posY*9+posX]].setDead();
         deadStone.push_back(stonemap[posY*9+posX]);
@@ -139,14 +141,14 @@ void StoneController::updateSelectedStone(int currStoneID,int x,int y){
     _s[currStoneID].setCol(x);
     // update its record in the stone map
 
-    qDebug()<<"updateSelectedStone function 3 . Size"<<stonemap.size();
+    // qDebug()<<"updateSelectedStone function 3 . Size"<<stonemap.size();
 
     stonemap[y*9+x] = currStoneID;
 }
 void StoneController::conductMove(StepRecorder::Step bestMove){
     if(bestMove.killedID != -1){
         // previous stone on this position is eaten
-        qDebug()<<"Trying to eat stone on col  "<<bestMove.destIndex%9<<" row "<<bestMove.destIndex/9;
+        // qDebug()<<"Trying to eat stone on col  "<<bestMove.destIndex%9<<" row "<<bestMove.destIndex/9;
         processEatenStoneOn(bestMove.destIndex%9,bestMove.destIndex/9);
     }
     recordStep(bestMove.killedID,bestMove.destIndex,bestMove.movedID,bestMove.previousIndex);
@@ -157,7 +159,7 @@ bool StoneController::isThisSelected(int i) const {
     return _selectedId == i;
 }
 void StoneController::selectThisOne(int i){
-    qDebug()<<"Successfully select!";
+    // qDebug()<<"Successfully select!";
     _selectedId = i;
 }
 bool StoneController::canMoveToDest(int currRef, int destX, int destY) const {
@@ -204,7 +206,7 @@ bool StoneController::KINGCanMoveTo(int currentRef, int destX,int destY) const {
     int row = _s[currentRef].getRow();
     int col = _s[currentRef].getCol();
     if(twoStonesOrPosFaceToFace(destY*9+destX,31-currentRef)){
-        qDebug()<<"No you shouldn't move like this";
+        // qDebug()<<"No you shouldn't move like this";
         return false;
     }
     return (destY == row && destX - col == 1)
@@ -214,7 +216,7 @@ bool StoneController::KINGCanMoveTo(int currentRef, int destX,int destY) const {
 }
 bool StoneController::inNinePalace(int currentRef,int destX,int destY) const {
     if(isOnBottomHalfAtFirst(currentRef)){
-        qDebug()<<"OutOf 9 palace?"<<!(3<=destX && 5>=destX && 7<=destY && 9>=destY);
+        // qDebug()<<"OutOf 9 palace?"<<!(3<=destX && 5>=destX && 7<=destY && 9>=destY);
         if(!(3<=destX && 5>=destX && 7<=destY && 9>=destY))
             return false;
     }
@@ -225,7 +227,7 @@ bool StoneController::inNinePalace(int currentRef,int destX,int destY) const {
     return true;
 }
 bool StoneController::twoStonesOrPosFaceToFace(int destIndex,int examinedID) const {
-    qDebug()<<"No other stone in the way?"<<stoneCountInTheWay(examinedID,destIndex%9,destIndex/9);
+    // qDebug()<<"No other stone in the way?"<<stoneCountInTheWay(examinedID,destIndex%9,destIndex/9);
     if(stoneCountInTheWay(examinedID,destIndex%9,destIndex/9)==0){
         return (destIndex%9)==_s[examinedID].getCol();
     }
@@ -376,7 +378,7 @@ bool StoneController::hasSameColorOnDest(int currRef, int destx, int desty) cons
     return isRed == _s[currRef].isRed();
 }
 void StoneController::recordStep(int killedID, int destIndex,int movedId,int previousIndex){
-    qDebug()<<"killedId = "<<killedID;
+    // qDebug()<<"killedId = "<<killedID;
     stepRecorder.recordStep(killedID,destIndex,movedId,previousIndex);
 }
 void StoneController::recordStep(StepRecorder::Step step){

@@ -4,6 +4,8 @@
 #include <QElapsedTimer>
 #include <QTime>
 #include <QCoreApplication>
+#define QT_NO_DEBUG_OUTPUT
+
 ManMachineGame::ManMachineGame()
 {
 
@@ -51,14 +53,11 @@ void ManMachineGame::computerMove(){
     QTime _Timer = QTime::currentTime().addMSecs(2000);
     while( QTime::currentTime() < _Timer )
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-    if(stoneController._s.size()==28){
-        int a = 1;
-    }
     StepRecorder::Step bestMove = ai.getBestMove(stoneController);
-    qDebug()<<"moved id is "<<bestMove.movedID;
-    qDebug()<<"killed id is "<<bestMove.killedID;
+//    qDebug()<<"moved id is "<<bestMove.movedID;
+//    qDebug()<<"killed id is "<<bestMove.killedID;
     conductMove(bestMove);
-    qDebug()<<"Computer Moves!";
+//    qDebug()<<"Computer Moves!";
 }
 
 

@@ -1,5 +1,7 @@
 #include "stone.h"
 #include <QHash>
+#define QT_NO_DEBUG_OUTPUT
+
 Stone::Stone()
 {
     radius = 20;

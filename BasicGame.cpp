@@ -7,6 +7,8 @@
 #include <QThread>
 #include <QTime>
 #include <QCoreApplication>
+#define QT_NO_DEBUG_OUTPUT
+
 BasicGame::BasicGame(bool redDown,QWidget *parent,int selectedID) :
     QWidget(parent),
     stoneController(selectedID,redDown)
@@ -21,7 +23,7 @@ BasicGame::BasicGame(bool redDown,QWidget *parent,int selectedID) :
 }
 void BasicGame::regretBtnFunction(){
     connect(regretBtn,&QPushButton::clicked,[=](){
-        qDebug()<<"=============supertype regret called==============";
+        // qDebug()<<"=============supertype regret called==============";
         stoneController.regretStep();
         redTurn = !redTurn;
         update();
@@ -72,11 +74,11 @@ void BasicGame::paintGrid(QPainter & painter){
     painter.drawLine(intercross[0][5],intercross[2][3]);
     painter.drawLine(intercross[9][3],intercross[7][5]);
     painter.drawLine(intercross[9][5],intercross[7][3]);
-    qDebug()<<"Finish Grid Painting";
+    // qDebug()<<"Finish Grid Painting";
 }
 
 void BasicGame::paintStones(QPainter & painter){
-    qDebug()<<"Starts Stones Painting";
+    // qDebug()<<"Starts Stones Painting";
     drawLiveStones(painter);
     drawDeadStones(painter);
 }
@@ -122,7 +124,7 @@ void BasicGame::drawDeadStones(QPainter & painter){
     int redDrawn = 0;
     int blackDrawn = 0;
     for (int i = 0 ; i < stoneController.deadStone.size() ; i++) {
-        qDebug()<<"Black pawn should set black pen right?"<<!stoneController.deadShouldDrawAtBottom(i);
+        // qDebug()<<"Black pawn should set black pen right?"<<!stoneController.deadShouldDrawAtBottom(i);
         if(!stoneController.deadShouldDrawAtBottom(i)){
             if(stoneController.redIsDown())
                 painter.setPen(Qt::black);
@@ -210,8 +212,8 @@ bool BasicGame::isOutOfBoard(int pressedx,int pressedy){
     ||(xInBoard<0 || xInBoard>8*gridwidth+2*stoneradius));
 }
 void BasicGame::mousePressEvent(QMouseEvent * em){
-    qDebug()<<"Mouse Pressed!";
-    qDebug()<<"Shoul return directly"<<stoneController.isThisSelected(-1);
+//    qDebug()<<"Mouse Pressed!";
+//    qDebug()<<"Shoul return directly"<<stoneController.isThisSelected(-1);
     if(!stoneController.isThisSelected(-1)){
         QPoint pressedPoint = em->pos();
         if(isOutOfBoard(pressedPoint.x(),pressedPoint.y())){
@@ -240,8 +242,8 @@ void BasicGame::mousePressEvent(QMouseEvent * em){
                 // previous stone on this position is eaten
                 eatenStoneID = stoneController.getIdByIndex(9*y+x);
                 stoneController.processEatenStoneOn(x,y);
-                //update();
-                qDebug()<<"EatenID is "<<eatenStoneID;
+                // update();
+                // qDebug()<<"EatenID is "<<eatenStoneID;
             }
             stoneController.recordStep(eatenStoneID,9*y+x,stoneController._selectedId,
                                        stoneController.getIndexById(stoneController._selectedId));
